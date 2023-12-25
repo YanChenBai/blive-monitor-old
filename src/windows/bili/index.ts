@@ -10,9 +10,8 @@ export default async function () {
     show: true,
     backgroundColor: '#101014',
     webPreferences: {
-      contextIsolation: true,
+      contextIsolation: false,
       nodeIntegration: true,
-      preload: path.join(__dirname, '../preload.js'),
       webviewTag: true
     }
   })

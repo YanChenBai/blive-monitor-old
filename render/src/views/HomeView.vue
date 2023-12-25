@@ -1,9 +1,14 @@
 <template>
   <div p-10px flex flex-col>
-    <n-space w-full>
-      <n-input w-full type="info" v-model:value="id" />
+    <n-space w-full align="center">
+      <n-input w-full type="info" v-model:value="id" placeholder="输入房间号" />
       <n-button type="info" @click="add()">添加</n-button>
       <n-button type="info" @click="openBili()">B站主页</n-button>
+      <n-switch v-model:value="model">
+        <template #icon> 🤔 </template>
+        <template #checked> 模式 1 </template>
+        <template #unchecked> 模式 2 </template>
+      </n-switch>
     </n-space>
     <div m-t-10px of-hidden style="height: calc(100vh - 96px)">
       <n-scrollbar>
@@ -20,7 +25,7 @@
             </template>
             <template #header-extra>
               <n-space>
-                <n-button size="small" @click="openLive(item)">打开</n-button>
+                <n-button size="small" type="info" @click="openLive(item)">打开</n-button>
                 <n-button size="small" type="error" @click="remove(index)">删除</n-button>
               </n-space>
             </template>
@@ -41,6 +46,7 @@ defineOptions({ name: 'HomeView' })
 
 const { rooms } = storeToRefs(useRoomsStore())
 const id = ref<number | null>(null)
+const model = ref(false)
 
 function add() {
   window.electron.ipcRenderer.send('main:getRoomInfo', id.value)
@@ -51,7 +57,7 @@ function remove(index: number) {
 }
 
 function openLive(room: Room) {
-  window.electron.ipcRenderer.send('main:openLive', { ...room })
+  window.electron.ipcRenderer.send('main:openLive', { ...room, model: model.value })
 }
 
 function openBili() {

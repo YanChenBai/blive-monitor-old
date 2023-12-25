@@ -2,70 +2,7 @@ import { BrowserWindow, Menu, app, ipcMain } from 'electron'
 import path from 'path'
 import liveWin from '../live'
 import biliWin from '../bili'
-
-interface RoomInfo {
-  code: number
-  msg: string
-  message: string
-  data: {
-    uid: number
-    room_id: number
-    short_id: number
-    attention: number
-    online: number
-    is_portrait: boolean
-    description: string
-    live_status: number
-    area_id: number
-    parent_area_id: number
-    parent_area_name: string
-    old_area_id: number
-    background: string
-    title: string
-    user_cover: string
-    keyframe: string
-    is_strict_room: boolean
-    live_time: string
-    tags: string
-    is_anchor: number
-    room_silent_type: string
-    room_silent_level: number
-    room_silent_second: number
-    area_name: string
-    // more...
-  }
-}
-
-interface UserInfo {
-  code: number
-  msg: string
-  message: string
-  data: {
-    info: {
-      uid: number
-      uname: string
-      face: string
-    }
-    exp: { master_level: {} }
-    follower_num: number
-    room_id: number
-    medal_name: string
-    glory_count: number
-    pendant: string
-    link_group_num: number
-    room_news: {
-      content: string
-      ctime: string
-      ctime_text: string
-    }
-  }
-}
-
-interface Room {
-  name: string
-  face: string
-  room_id: string
-}
+import type { UserInfo, RoomInfo, OpenRoom } from '../../types'
 
 async function getInfo(id: string) {
   return await fetch(`https://api.live.bilibili.com/room/v1/Room/get_info?id=${id}`)
@@ -94,7 +31,7 @@ async function getInfo(id: string) {
 
 export default async function () {
   const win = new BrowserWindow({
-    width: 400,
+    width: 600,
     height: 600,
     transparent: false,
     frame: false,
@@ -104,7 +41,7 @@ export default async function () {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: true,
-      preload: path.join(__dirname, '../preload.js'),
+      preload: path.join(__dirname, './preload.js'),
       webviewTag: true
     }
   })
@@ -133,8 +70,8 @@ export default async function () {
   })
 
   /** 打开直播 */
-  ipcMain.on('main:openLive', (_event, room: Room) => {
-    liveWin(room.room_id, room.name)
+  ipcMain.on('main:openLive', (_event, options: OpenRoom) => {
+    liveWin(options)
   })
 
   /** 打开b站首页登录 */
