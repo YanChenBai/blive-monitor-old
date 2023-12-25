@@ -6,7 +6,7 @@
 <script setup lang="ts">
 import BiliPlayer from '@/components/BiliPlayer.vue'
 import { useRoute } from 'vue-router'
-import { events } from '@/utils/events'
+import { closeEvents, minEvents } from '@/utils/events'
 import { storeToRefs } from 'pinia'
 import { useRoomsStore } from '@/stores/rooms'
 
@@ -24,9 +24,16 @@ const { win_id, room_id, name } = route.query as {
 if (name) document.title = name
 
 /** 注册窗口关闭事件 */
-events.push(() => {
+closeEvents.push(() => {
   if (win_id) {
     window.electron.ipcRenderer.send(`close:${win_id}`)
+  }
+})
+
+/**  注册最小化按钮事件 */
+minEvents.push(() => {
+  if (win_id) {
+    window.electron.ipcRenderer.send(`min:${win_id}`)
   }
 })
 </script>

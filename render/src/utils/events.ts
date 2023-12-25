@@ -1,1 +1,3 @@
-export const events: Array<() => void> = []
+export const closeEvents: Array<() => void> = []
+
+export const minEvents: Array<() => void> = []

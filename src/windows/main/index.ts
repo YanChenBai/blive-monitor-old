@@ -31,7 +31,7 @@ async function getInfo(id: string) {
 
 export default async function () {
   const win = new BrowserWindow({
-    width: 600,
+    width: 460,
     height: 600,
     transparent: false,
     frame: false,
@@ -62,6 +62,11 @@ export default async function () {
   /** 关闭窗口 */
   ipcMain.on('main:close', () => {
     win.close()
+  })
+
+  /** 最小化窗口  */
+  ipcMain.on('main:min', () => {
+    win.minimize()
   })
 
   /** 获取直播间信息 */

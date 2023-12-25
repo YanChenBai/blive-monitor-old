@@ -3,16 +3,14 @@ import path from 'path'
 
 export default async function () {
   const win = new BrowserWindow({
-    width: 800,
+    width: 1000,
     height: 600,
     transparent: false,
     frame: true,
     show: true,
     backgroundColor: '#101014',
     webPreferences: {
-      contextIsolation: false,
-      nodeIntegration: true,
-      webviewTag: true
+      preload: path.join(__dirname, './preload.js')
     }
   })
 

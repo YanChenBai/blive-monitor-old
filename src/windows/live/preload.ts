@@ -10,7 +10,7 @@ async function awaitLivePlayer() {
         clearInterval(timer)
         res()
       }
-    })
+    }, 100)
   })
 }
 
@@ -96,15 +96,15 @@ window.onload = async () => {
     position: absolute;
     bottom: 40px;
     left: 10px;
-    z-index: 9999999;
+    z-index: 9999;
     width: 300px;
      `
   )
 
-  /** 默认隐藏 */
-  danmuInput.style.display = 'none'
-
   danmuInput.innerHTML = `
+    <div style="height: 30px;">
+      <button id="danmu-input-switch" style="display: none;line-height: 16px;">发送:开</button>
+    </div>
     <div
      id="danmu-num"
      style="
@@ -116,9 +116,10 @@ window.onload = async () => {
       align-items: center;
       padding-left: 6px;
       right: 0;
+      bottom: 0px;
+      display: none;
      "
     >0/20</div>
-
     <input
       placeholder="请输入弹幕内容"
       id="danmu-input"
@@ -127,17 +128,34 @@ window.onload = async () => {
       style="
       height: 30px;
       width: 100%;
-      opacity: 0.9;
+      opacity: 1;
+      display: none;
     " />
   `
   document.body.appendChild(danmuInput)
+  const inputSwitch = document.getElementById('danmu-input-switch') as HTMLButtonElement
 
   document.addEventListener('mouseenter', () => {
-    danmuInput.style.display = 'block'
+    inputSwitch.style.display = 'block'
   })
 
   document.addEventListener('mouseleave', () => {
-    danmuInput.style.display = 'none'
+    inputSwitch.style.display = 'none'
+  })
+
+  /** 切换输入框显示状态 */
+  inputSwitch.addEventListener('click', () => {
+    const danmuNum = document.getElementById('danmu-num') as HTMLDivElement
+    const dom = document.getElementById('danmu-input') as HTMLInputElement
+    if (dom.style.display === 'none') {
+      inputSwitch.innerText = '发送:关'
+      danmuNum.style.display = 'block'
+      dom.style.display = 'block'
+    } else {
+      inputSwitch.innerText = '发送:开'
+      danmuNum.style.display = 'none'
+      dom.style.display = 'none'
+    }
   })
 
   const input = document.querySelector('#danmu-input') as HTMLInputElement

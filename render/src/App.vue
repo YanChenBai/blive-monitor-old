@@ -1,7 +1,22 @@
 <template>
-  <n-config-provider abstract :theme="darkTheme">
+  <n-config-provider
+    abstract
+    :theme="darkTheme"
+    :theme-overrides="{
+      common: {
+        primaryColor: '#fb7299FF',
+        primaryColorHover: '#F288A6FF',
+        primaryColorPressed: '#EE7396FF'
+      },
+      Input: {
+        borderHover: '2px solid #F288A6FF',
+        borderDisabled: '2px solid #00000',
+        borderFocus: '2px solid #F288A6FF'
+      }
+    }"
+  >
     <div h-screen w-screen flex flex-col>
-      <WinMenu @close="close" />
+      <WinMenu @close="close" @min="min" />
       <n-layout flex-1>
         <RouterView />
       </n-layout>
@@ -13,10 +28,14 @@
 import { darkTheme } from 'naive-ui'
 import { RouterView } from 'vue-router'
 import WinMenu from './components/WinMenu.vue'
-import { events } from '@/utils/events'
+import { closeEvents, minEvents } from '@/utils/events'
 
 function close() {
-  events.forEach((event) => event())
+  closeEvents.forEach((event) => event())
+}
+
+function min() {
+  minEvents.forEach((event) => event())
 }
 </script>
 
