@@ -110,13 +110,13 @@ window.onload = async () => {
      style="
       opacity: 0.6;
       width: fit-content;
-      height: 100%;
+      height: fit-content;
       position: absolute;
       display: flex;
       align-items: center;
       padding-left: 6px;
       right: 0;
-      bottom: 0px;
+      bottom: 10px;
       display: none;
      "
     >0/20</div>

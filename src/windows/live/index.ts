@@ -6,7 +6,7 @@ import type { OpenRoom } from '../../types'
 import axios from 'axios'
 
 const iconPath = app.isPackaged
-  ? path.join(process.resourcesPath, '../../../dist/icons')
+  ? path.resolve(process.resourcesPath, '../../../dist/icons')
   : path.join(__dirname, '../../../icons')
 
 /** 查看有没有图标 */
