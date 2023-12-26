@@ -70,6 +70,7 @@ export default async function () {
   /** 关闭窗口 */
   ipcMain.on('main:close', () => {
     win.close()
+    app.quit()
   })
 
   /** 最小化窗口  */

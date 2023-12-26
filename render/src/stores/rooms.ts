@@ -12,10 +12,8 @@ export interface Room {
 export const useRoomsStore = defineStore(
   'rooms',
   () => {
-    const showMenuState = ref(false)
-    const showFoldBtn = ref(true)
     const rooms = ref<Room[]>([])
-    return { rooms, showMenuState, showFoldBtn }
+    return { rooms }
   },
   {
     persist: {

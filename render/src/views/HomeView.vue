@@ -1,30 +1,20 @@
 <template>
   <div p-10px flex flex-col>
-    <n-space w-full align="center">
+    <div flex w-full align="center">
       <n-input-group>
         <n-input w-full type="primary" v-model:value="keyword" placeholder="输入房间号👌" />
         <n-button type="primary" @click="add()">添加</n-button>
       </n-input-group>
-
-      <n-button type="primary" @click="openBili()">登录</n-button>
-      <n-select
-        w-126px
-        text-center
-        v-model:value="model"
-        :options="[
-          { label: '🤔 模式 1 ', value: 0 },
-          { label: '😜 模式 2 ', value: 1 }
-        ]"
-      />
-    </n-space>
-    <div m-t-10px of-hidden style="height: calc(100vh - 96px)">
-      <n-scrollbar>
+      <n-button type="primary" m-l-6px @click="openBili()">登录</n-button>
+    </div>
+    <div m-t-10px of-hidden>
+      <n-scrollbar style="height: calc(100vh - 96px)">
         <n-card
           v-for="(item, index) in searchList"
           :key="index"
           :bordered="false"
           size="small"
-          m-b-10px
+          class="item"
         >
           <n-thing>
             <template #avatar>
@@ -103,6 +93,7 @@ function openBili() {
   window.electron.ipcRenderer.send('main:openBili')
 }
 
+// 搜索
 const searchList = computed(() => {
   if (keyword.value.length <= 0) return rooms.value
   else {
@@ -140,4 +131,8 @@ minEvents.push(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.item:not(:last-child) {
+  margin-bottom: 10px;
+}
+</style>

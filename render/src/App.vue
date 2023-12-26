@@ -15,14 +15,16 @@
       }
     }"
   >
-    <n-message-provider placement="bottom-right">
-      <div h-screen w-screen flex flex-col>
-        <WinMenu @close="close" @min="min" />
-        <n-layout flex-1>
-          <RouterView />
-        </n-layout>
-      </div>
-    </n-message-provider>
+    <n-dialog-provider>
+      <n-message-provider placement="bottom-right">
+        <div h-screen w-screen flex flex-col>
+          <WinMenu @close="close" @min="min" />
+          <n-layout flex-1>
+            <RouterView />
+          </n-layout>
+        </div>
+      </n-message-provider>
+    </n-dialog-provider>
   </n-config-provider>
 </template>
 
@@ -46,5 +48,8 @@ function min() {
 * {
   padding: 0;
   margin: 0;
+}
+body {
+  overflow: hidden;
 }
 </style>
