@@ -5,23 +5,31 @@ import biliWin from '../bili'
 import type { UserInfo, RoomInfo, OpenRoom } from '../../types/bili'
 
 async function getInfo(id: string) {
-  return await fetch(`https://api.live.bilibili.com/room/v1/Room/get_info?id=${id}`)
+  const { uid, short_id } = await fetch(
+    `https://api.live.bilibili.com/room/v1/Room/get_info?id=${id}`
+  )
     .then((res) => res.json() as Promise<RoomInfo>)
     .then((res) => {
       if (res.code === 0) {
-        return res.data.uid
+        return {
+          uid: res.data.uid,
+          short_id: res.data.short_id
+        }
       } else {
         return Promise.reject(res)
       }
     })
-    .then((uid) => fetch(`https://api.live.bilibili.com/live_user/v1/Master/info?uid=${uid}`))
+
+  return await fetch(`https://api.live.bilibili.com/live_user/v1/Master/info?uid=${uid}`)
     .then((res) => res.json() as Promise<UserInfo>)
     .then((res) => {
       if (res.code === 0) {
         return {
+          uid: String(uid),
+          room_id: String(res.data.room_id),
+          short_id: String(short_id),
           name: res.data.info.uname,
-          face: res.data.info.face,
-          room_id: String(res.data.room_id)
+          face: res.data.info.face
         }
       } else {
         return Promise.reject(res)

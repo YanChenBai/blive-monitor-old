@@ -2,7 +2,9 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export interface Room {
-  room_id: number
+  uid: string
+  room_id: string
+  short_id: string
   name: string
   face: string
 }

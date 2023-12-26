@@ -2,7 +2,7 @@
   <div p-10px flex flex-col>
     <n-space w-full align="center">
       <n-input-group>
-        <n-input w-full type="primary" v-model:value="id" placeholder="输入房间号👌" />
+        <n-input w-full type="primary" v-model:value="keyword" placeholder="输入房间号👌" />
         <n-button type="primary" @click="add()">添加</n-button>
       </n-input-group>
 
@@ -19,7 +19,13 @@
     </n-space>
     <div m-t-10px of-hidden style="height: calc(100vh - 96px)">
       <n-scrollbar>
-        <n-card v-for="(item, index) in rooms" :key="index" :bordered="false" size="small" m-b-10px>
+        <n-card
+          v-for="(item, index) in searchList"
+          :key="index"
+          :bordered="false"
+          size="small"
+          m-b-10px
+        >
           <n-thing>
             <template #avatar>
               <n-avatar :size="48" :src="item.face" />
@@ -28,19 +34,24 @@
               <n-text type="primary">{{ item.name }}</n-text>
             </template>
             <template #description>
-              <n-text text-14px>{{ item.room_id }}</n-text>
+              <n-text text-14px>{{ item.room_id }}<n-divider vertical />{{ item.short_id }}</n-text>
             </template>
             <template #header-extra>
               <n-space>
                 <n-button round size="small" type="primary" @click="openLive(item)">打开</n-button>
 
-                <n-popconfirm @positive-click="remove(index)">
+                <n-popconfirm
+                  @positive-click="remove(index)"
+                  positive-text="尊嘟"
+                  negative-text="假嘟"
+                  placement="bottom"
+                >
                   <template #trigger>
                     <n-button circle size="small" type="error">
                       <n-icon size="16"> <MaterialSymbolsDeleteRounded /> </n-icon>
                     </n-button>
                   </template>
-                  一切都将一去杳然，任何人都无法将其捕获。
+                  要删噜!
                 </n-popconfirm>
               </n-space>
             </template>
@@ -54,18 +65,30 @@
 <script setup lang="ts">
 import { type Room, useRoomsStore } from '@/stores/rooms'
 import MaterialSymbolsDeleteRounded from '@/components/Icons/MaterialSymbolsDeleteRounded.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { closeEvents, minEvents } from '@/utils/events'
+import { match } from 'pinyin-pro'
+import { useMessage } from 'naive-ui'
 
 defineOptions({ name: 'HomeView' })
 
+const message = useMessage()
 const { rooms } = storeToRefs(useRoomsStore())
-const id = ref<number | null>(null)
+const keyword = ref<string>('')
 const model = ref(0)
 
 function add() {
-  window.electron.ipcRenderer.send('main:getRoomInfo', id.value)
+  const regex = /^\d+$/
+  if (!regex.test(keyword.value)) {
+    message.error('请输入正确格式的房间号!')
+    return
+  }
+  if (keyword.value.trim().length <= 0) {
+    message.error('请输入房间号!')
+    return
+  }
+  window.electron.ipcRenderer.send('main:getRoomInfo', keyword.value)
 }
 
 function remove(index: number) {
@@ -80,8 +103,30 @@ function openBili() {
   window.electron.ipcRenderer.send('main:openBili')
 }
 
+const searchList = computed(() => {
+  if (keyword.value.length <= 0) return rooms.value
+  else {
+    return rooms.value.filter((item) => {
+      const val = keyword.value.toLowerCase()
+      let { short_id } = item
+      // 修改了数据结构兼容
+      if (!short_id) short_id = ''
+      return (
+        item.name.toLowerCase().includes(val) ||
+        item.room_id.includes(val) ||
+        item.short_id.includes(val) ||
+        match(item.name, val, { continuous: true }) !== null
+      )
+    })
+  }
+})
+
 window.electron.ipcRenderer.on('main:getRoomInfo', (data: Room) => {
-  rooms.value.push(data)
+  const index = rooms.value.findIndex((item) => item.room_id === data.room_id)
+  if (index === -1) rooms.value.push(data)
+  else {
+    message.error('加过了!')
+  }
 })
 
 // 注册关闭按钮事件
