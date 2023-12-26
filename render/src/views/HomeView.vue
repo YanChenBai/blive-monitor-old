@@ -24,7 +24,12 @@
               <n-text type="primary">{{ item.name }}</n-text>
             </template>
             <template #description>
-              <n-text text-14px>{{ item.room_id }}<n-divider vertical />{{ item.short_id }}</n-text>
+              <n-text text-14px>
+                {{ item.room_id }}
+                <template v-if="item.short_id !== '0'">
+                  <n-divider vertical />{{ item.short_id }}</template
+                >
+              </n-text>
             </template>
             <template #header-extra>
               <n-space>
