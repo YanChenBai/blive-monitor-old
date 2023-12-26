@@ -1,6 +1,6 @@
 <template>
   <div flex h-32px w-full class="menu" v-show="showMenuState">
-    <div w-full flex items-center p-l-6px drag>
+    <div w-full flex items-center p-l-10px drag>
       <n-text type="primary">{{ title }}</n-text>
     </div>
     <div right-0 no-drag m-4px>

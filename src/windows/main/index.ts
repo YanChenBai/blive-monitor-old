@@ -2,7 +2,7 @@ import { BrowserWindow, Menu, app, ipcMain } from 'electron'
 import path from 'path'
 import liveWin from '../live'
 import biliWin from '../bili'
-import type { UserInfo, RoomInfo, OpenRoom } from '../../types'
+import type { UserInfo, RoomInfo, OpenRoom } from '../../types/bili'
 
 async function getInfo(id: string) {
   return await fetch(`https://api.live.bilibili.com/room/v1/Room/get_info?id=${id}`)
@@ -41,13 +41,13 @@ export default async function () {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: true,
-      preload: path.join(__dirname, './preload.js'),
+      preload: path.join(__dirname, '../preload.js'),
       webviewTag: true
     }
   })
 
   const loadURL = app.isPackaged
-    ? path.resolve(__dirname, '../../../dist-render/index.html')
+    ? path.resolve(__dirname, '../../../render/dist/index.html')
     : 'http://localhost:5173'
 
   win.loadURL(loadURL)

@@ -2,17 +2,18 @@
   <div p-10px flex flex-col>
     <n-space w-full align="center">
       <n-input-group>
-        <n-input w-full type="primary" v-model:value="id" placeholder="输入房间号" />
+        <n-input w-full type="primary" v-model:value="id" placeholder="输入房间号👌" />
         <n-button type="primary" @click="add()">添加</n-button>
       </n-input-group>
 
       <n-button type="primary" @click="openBili()">登录</n-button>
       <n-select
-        w-100px
+        w-126px
+        text-center
         v-model:value="model"
         :options="[
-          { label: '模式1🤔', value: false },
-          { label: '模式2😜', value: true }
+          { label: '🤔 模式 1 ', value: 0 },
+          { label: '😜 模式 2 ', value: 1 }
         ]"
       />
     </n-space>
@@ -61,7 +62,7 @@ defineOptions({ name: 'HomeView' })
 
 const { rooms } = storeToRefs(useRoomsStore())
 const id = ref<number | null>(null)
-const model = ref(false)
+const model = ref(0)
 
 function add() {
   window.electron.ipcRenderer.send('main:getRoomInfo', id.value)
@@ -72,7 +73,7 @@ function remove(index: number) {
 }
 
 function openLive(room: Room) {
-  window.electron.ipcRenderer.send('main:openLive', { ...room, model: model.value })
+  window.electron.ipcRenderer.send('main:openLive', { ...room, model: model.value === 1 })
 }
 
 function openBili() {

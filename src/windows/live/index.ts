@@ -2,7 +2,7 @@ import { BrowserWindow, Menu, app, ipcMain } from 'electron'
 import path from 'path'
 import { v4 } from 'uuid'
 import fs from 'fs'
-import type { OpenRoom } from '../../types'
+import type { OpenRoom } from '../../types/bili'
 import axios from 'axios'
 
 const iconPath = app.isPackaged
@@ -66,11 +66,13 @@ export default async function (options: OpenRoom) {
   /** 不同模式不同url */
   if (options.model) {
     const loadURL = app.isPackaged
-      ? path.resolve(__dirname, '../../../dist-render/index.html')
+      ? path.resolve(__dirname, '../../../render/dist/index.html')
       : 'http://localhost:5173'
 
     win.loadURL(`${loadURL}#/live?win_id=${win_id}&room_id=${options.room_id}&name=${options.name}`)
   } else {
+    const css = fs.readFileSync(path.resolve(__dirname, 'index.css')).toString()
+    win.webContents.insertCSS(css)
     win.loadURL(`https://live.bilibili.com/${options.room_id}`)
   }
 

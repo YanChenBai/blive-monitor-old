@@ -6,5 +6,5 @@
   "execMap": {
     "js": "pnpm -v"
   },
-  "ext": "ts, json"
+  "ext": "ts, json, css, html"
 }

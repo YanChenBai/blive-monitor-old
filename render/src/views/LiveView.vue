@@ -1,5 +1,5 @@
 <template>
-  <div absolute h-40px z-99 drag style="width: calc(100vw - 40px)" v-show="!showMenuState"></div>
+  <div absolute h-40px z-99 drag v-show="!showMenuState" class="drag-box"></div>
   <BiliPlayer v-if="room_id" :room_id="room_id" :quality="1" />
 </template>
 
@@ -38,4 +38,8 @@ minEvents.push(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.drag-box {
+  width: calc(100vw - 40px);
+}
+</style>

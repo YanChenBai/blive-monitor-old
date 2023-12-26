@@ -2,13 +2,13 @@
   "name": "blive-monitor",
   "version": "0.0.2",
   "description": "",
-  "main": "./dist/src/main.js",
+  "main": "./dist/main.js",
   "type": "commonjs",
   "scripts": {
     "init:render": "cd ./render && pnpm i",
     "dev": "chcp 65001 && electron .",
-    "build:ts": "tsc",
-    "build:electron": "pnpm build:ts && node ./dist/src/copy.js  && electron-builder"
+    "build:ts": "tsc && node ./build.js",
+    "build:electron": "pnpm build:ts && electron-builder"
   },
   "keywords": [],
   "author": "",
