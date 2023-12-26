@@ -1,5 +1,5 @@
 {
-  files: ['./dist', './node_modules', './dist-render'],
+  files: ['./dist', './node_modules', './render/dist'],
   extraResources: ['./dist/icons'],
   productName: 'blive-monitor',
   directories: {

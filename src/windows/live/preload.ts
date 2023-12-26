@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron'
 import fs from 'fs'
 import path from 'path'
 
@@ -17,120 +18,146 @@ async function awaitLivePlayer() {
   })
 }
 
-const inputHtml = fs.readFileSync(path.resolve(__dirname, 'index.html')).toString()
+// 发送弹幕
+function sendDanmu(msg: string) {
+  if (msg.length <= 0) {
+    alert('请输入弹幕内容')
+    return
+  }
+  const textarea = document.querySelector(
+    '#control-panel-ctnr-box > div.chat-input-ctnr.p-relative > div:nth-child(2) > textarea'
+  ) as HTMLTextAreaElement
+  const btn = document.querySelector(
+    '.control-panel-ctnr .chat-input-ctnr ~ .bottom-actions .bl-button--primary'
+  ) as HTMLButtonElement
 
-window.onload = async () => {
-  // 等待livePlayer对象挂载
-  await awaitLivePlayer()
+  /** 创建一个输入事件 */
+  const inputEvent = new Event('input', {
+    bubbles: true,
+    cancelable: true
+  })
+  textarea.value = msg
 
-  /** 启用网页全屏 */
-  await Promise.all([window.livePlayer?.setFullscreenStatus(1)])
+  /** 触发输入事件 */
+  textarea.dispatchEvent(inputEvent)
 
-  /** 关闭弹幕侧边栏 */
-  document.body.setAttribute('class', `${document.body.getAttribute('class')} hide-aside-area`)
+  /** 触发发送按钮 */
+  btn.click()
+}
 
-  /** 添加拖拽栏 */
-  const menu = document.createElement('div')
-  menu.classList.add('drag-menu')
-  document.body.appendChild(menu)
+/** 创建输入框 */
+function createDanmuInput() {
+  // 获取html元素
+  const inputHtml = `
+  <div class="btns close">
+  <div class="close-win">
+    <button class="btn">关</button>
+  </div>
+  <div class="input-switch">
+    <button class="btn">弹</button>
+  </div>
+  <div class="min-win">
+    <button class="btn">小</button>
+  </div>
+</div>
+<div class="input-wrap close">
+  <input type="text" placeholder="发个弹幕呗~" maxlength="20" />
+  <div class="length"><span class="value">0</span>/20</div>
+</div>
 
-  /** 弹幕输入框 */
-  const inputWrap = document.createElement('div')
-  inputWrap.classList.add('input-wrap')
-  inputWrap.innerHTML = inputHtml
+  `
+
+  // 创建元素
+  const wrap = document.createElement('div')
+
+  wrap.innerHTML = inputHtml
 
   /** 添加弹幕输入框 */
-  document.body.appendChild(inputWrap)
+  document.body.appendChild(wrap)
 
-  function changeInputStatus() {
-    const danmuInput = document.querySelector('.danmu-input') as HTMLDivElement
-    const inputSwitchValue = document.querySelector('.input-switch-value') as HTMLSpanElement
-    if (danmuInput.style.display === 'none') {
-      inputSwitchValue.innerText = '关'
-      danmuInput.style.display = 'block'
+  let inputStatus = false
+  let btnStatus = false
+
+  const btnsWrap = document.querySelector('.btns') as HTMLDivElement
+  const closeBtn = document.querySelector('.close-win>button') as HTMLButtonElement
+  const minBtn = document.querySelector('.min-win>button') as HTMLButtonElement
+  const btn = document.querySelector('.input-switch>button') as HTMLButtonElement
+  const inputWrap = document.querySelector('.input-wrap') as HTMLDivElement
+  const input = document.querySelector('.input-wrap>input') as HTMLInputElement
+  const len = document.querySelector('.input-wrap>.length>.value') as HTMLDivElement
+
+  // 更新输入框显示状态
+  function changeInput(val: boolean) {
+    inputStatus = val
+    if (val) {
+      inputWrap.classList.remove('close')
+      inputWrap.classList.add('open')
+      input.focus()
     } else {
-      inputSwitchValue.innerText = '开'
-      danmuInput.style.display = 'none'
+      inputWrap.classList.remove('open')
+      inputWrap.classList.add('close')
     }
   }
 
-  /** 监听按钮 */
-  const btn = document.querySelector('.input-switch>button') as HTMLButtonElement
-  btn.addEventListener('click', changeInputStatus)
-  // document.body.appendChild(danmuInput)
-  // const inputSwitch = document.getElementById('danmu-input-switch') as HTMLButtonElement
+  // 更新按钮状态
+  function changeBtn(val: boolean) {
+    btnStatus = val
 
-  // document.addEventListener('mouseenter', () => {
-  //   inputSwitch.style.display = 'block'
-  // })
+    if (val) {
+      btnsWrap.classList.remove('close')
+      btnsWrap.classList.add('open')
+    } else {
+      btnsWrap.classList.remove('open')
+      btnsWrap.classList.add('close')
+    }
+  }
 
-  // document.addEventListener('mouseleave', () => {
-  //   inputSwitch.style.display = 'none'
-  // })
+  // 监听鼠标进入窗口和离开窗口事件
+  document.addEventListener('mouseenter', () => {
+    changeBtn(true)
+  })
 
-  // function inputSwitchChange(state: boolean) {
-  //   const danmuNum = document.getElementById('danmu-num') as HTMLDivElement
-  //   const dom = document.getElementById('danmu-input') as HTMLInputElement
-  //   const displayVal = state ? 'block' : 'none'
+  document.addEventListener('mouseleave', () => {
+    changeBtn(false)
+  })
 
-  //   inputSwitch.innerText = '发送:' + (state ? '关' : '开')
-  //   danmuNum.style.display = displayVal
-  //   dom.style.display = displayVal
-  // }
+  const win_id = new URLSearchParams(window.location.search).get('win_id')
+  // 关闭窗口
+  closeBtn.addEventListener('click', () => ipcRenderer.send(`close:${win_id}`))
 
-  // /** 切换输入框显示状态 */
-  // inputSwitch.addEventListener('click', () => {
-  //   const danmuNum = document.getElementById('danmu-num') as HTMLDivElement
-  //   const dom = document.getElementById('danmu-input') as HTMLInputElement
-  //   inputSwitchChange(dom.style.display === 'none')
-  // })
+  // 最小化窗口
+  minBtn.addEventListener('click', () => ipcRenderer.send(`min:${win_id}`))
 
-  // const input = document.getElementById('danmu-input') as HTMLInputElement
+  // 切换显示
+  btn.addEventListener('click', () => changeInput(!inputStatus))
 
-  // /** 更新显示文本长度 */
-  // input.addEventListener('input', () => {
-  //   const dom = danmuInput.querySelector('#danmu-num') as HTMLDivElement
-  //   dom.innerText = input.value.length.toString() + '/20'
-  // })
+  // 更新字符数
+  input.addEventListener('input', () => (len.innerText = input.value.length.toString()))
 
-  // /** 发送弹幕 */
-  // function sendDanmu(msg: string) {
-  //   if (msg.length <= 0) {
-  //     console.log('请输入弹幕内容')
-  //     return
-  //   }
-  //   const bliDanmuInput = document.querySelector(
-  //     '#control-panel-ctnr-box > div.chat-input-ctnr.p-relative > div:nth-child(2) > textarea'
-  //   ) as HTMLTextAreaElement
-  //   const bliDanmuSendBtn = document.querySelector(
-  //     '.control-panel-ctnr .chat-input-ctnr ~ .bottom-actions .bl-button--primary'
-  //   ) as HTMLButtonElement
+  // 监听回车发送
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      // 发送
+      sendDanmu(input.value.trim())
+      // 清空
+      input.value = ''
+    }
 
-  //   /** 创建一个输入事件 */
-  //   const inputEvent = new Event('input', {
-  //     bubbles: true,
-  //     cancelable: true
-  //   })
-  //   bliDanmuInput.value = msg
+    if (e.key === 'Escape') {
+      changeInput(false)
+    }
+  })
+}
 
-  //   /** 触发输入事件 */
-  //   bliDanmuInput.dispatchEvent(inputEvent)
+/** 添加拖拽栏 */
+function createDragMenu() {
+  const menu = document.createElement('div')
+  menu.classList.add('drag-menu')
+  document.body.appendChild(menu)
+}
 
-  //   /** 触发发送按钮 */
-  //   bliDanmuSendBtn.click()
-  // }
-
-  // /** 监听回车发送 */
-  // input.addEventListener('keydown', (e) => {
-  //   if (e.key === 'Enter') {
-  //     /** 发送 */
-  //     sendDanmu(input.value.trim())
-  //     /** 清空 */
-  //     input.value = ''
-  //   }
-  // })
-
-  /** 去掉弹窗 */
+// 清除弹窗
+function clearPopover() {
   setTimeout(() => clearInterval(timer), 10000)
   const timer = setInterval(() => {
     document.querySelectorAll('.shop-popover').forEach((item) => {
@@ -138,4 +165,20 @@ window.onload = async () => {
       ;(item as HTMLDivElement).style.display = 'none'
     })
   }, 100)
+}
+
+window.onload = () => {
+  createDanmuInput()
+  createDragMenu()
+
+  // 等待livePlayer对象挂载
+  awaitLivePlayer().then(() => {
+    /** 启用网页全屏 */
+    window.livePlayer?.setFullscreenStatus(1)
+  })
+
+  /** 关闭弹幕侧边栏 */
+  document.body.setAttribute('class', `${document.body.getAttribute('class')} hide-aside-area`)
+
+  clearPopover()
 }

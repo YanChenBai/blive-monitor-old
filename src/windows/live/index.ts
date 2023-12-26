@@ -6,8 +6,8 @@ import type { OpenRoom } from '../../types/bili'
 import axios from 'axios'
 
 const iconPath = app.isPackaged
-  ? path.resolve(process.resourcesPath, '../../../dist/icons')
-  : path.join(__dirname, '../../../icons')
+  ? path.resolve(process.resourcesPath, '')
+  : path.join(__dirname, 'dist/icons')
 
 /** 查看有没有图标 */
 function isHaveIcon(room_id: string) {
@@ -73,7 +73,7 @@ export default async function (options: OpenRoom) {
   } else {
     const css = fs.readFileSync(path.resolve(__dirname, 'index.css')).toString()
     win.webContents.insertCSS(css)
-    win.loadURL(`https://live.bilibili.com/${options.room_id}`)
+    win.loadURL(`https://live.bilibili.com/${options.room_id}?win_id=${win_id}`)
   }
 
   /** 监听窗口关闭 */

@@ -25,6 +25,11 @@ html {
   display: none;
 }
 
+/* 去掉反馈按钮 */
+.web-player-icon-feedback {
+  display: none;
+}
+
 /** 全屏播放器 */
 .live-room-app .app-content .app-body .player-and-aside-area .left-container {
   position: fixed;
@@ -61,53 +66,107 @@ html {
   height: 40px;
 }
 
-/** 弹幕快捷发送 */
-.input-wrap {
+.btns {
   position: absolute;
+  z-index: 9999999;
+  right: 10px;
   top: 50vh;
-  transform: translateY(-50%);
-  left: 10px;
-  width: 100vw;
-  z-index: 9999;
-  display: flex;
-  overflow: hidden;
-  border-radius: 6px;
+  transition: all 0.2s;
+  transform: translate(0, -50%);
 }
 
-.danmu-length {
-  opacity: 0.6;
-  width: fit-content;
-  height: fit-content;
-  position: absolute;
-  display: flex;
-  align-items: center;
-  padding-left: 6px;
-  right: 0;
-  bottom: 10px;
-  display: none;
+.btns.open {
+  transform: translate(0, -50%);
 }
-.input-switch button {
-  background-color: rgba(0, 0, 0, 0.8);
+
+.btns.close {
+  transform: translate(calc(100% + 10px), -50%);
+}
+
+.btn {
+  transition: all 0.3s;
   border: 0;
   padding: 6px;
   color: #fff;
-  height: 40px;
+  height: 36px;
+  width: 36px;
+  border-radius: 20px;
   cursor: pointer;
-}
-.danmu-length {
-  height: 40px;
-  padding: 1px;
-  color: #fff;
-}
-.danmu-input {
-  width: 260px;
-}
-.danmu-input input {
-  height: 40px;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border: 0;
-  padding: 4px;
+  font-weight: 600;
+  font-size: 16px;
   box-sizing: border-box;
+  display: block;
+}
+
+.input-switch,
+.min-win {
+  margin-top: 10px;
+}
+
+.close-win button {
+  background: rgb(243, 59, 99);
+  border: 2px solid rgb(241, 83, 125);
+}
+.close-win button:hover {
+  background: rgba(243, 59, 99, 0.753);
+}
+
+.input-switch button {
+  background: #f288a6ff;
+  border: 2px solid rgb(240, 163, 184);
+}
+.input-switch button:hover {
+  background: rgba(238, 146, 172, 0.795);
+}
+
+.min-win button {
+  background: #00aeec;
+  border: 2px solid #5bb9db;
+}
+.min-win button:hover {
+  background: #00adecbe;
+}
+
+/* 输入框 */
+.input-wrap {
+  width: 0px;
+  display: flex;
+  position: absolute;
+  z-index: 9999;
+  right: 56px;
+  top: 50vh;
+  transform: translateY(-50%);
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.input-wrap.open {
+  width: 280px;
+}
+
+.input-wrap.close {
+  width: 0px;
+}
+
+.input-wrap input {
+  outline: unset;
+  border: 0;
+  width: 280px;
+  height: 36px;
+  background-color: #fff;
+  color: #000;
+  border-radius: 6px;
+  transition: all 0.3s;
+  padding: 10px 40px 10px 10px;
+  box-sizing: border-box;
+  border: 2px solid #f288a6ff;
+}
+
+.input-wrap .length {
+  position: absolute;
+  right: 10px;
+  height: 36px;
+  line-height: 36px;
+  color: #464545;
+  opacity: 0.8;
 }
