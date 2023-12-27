@@ -15,7 +15,6 @@ async function awaitLivePlayer() {
 /** 发送弹幕 */
 function sendDanmu(msg: string) {
   if (msg.length <= 0) {
-    alert('请输入弹幕内容')
     return
   }
   const textarea = document.querySelector(
@@ -129,16 +128,24 @@ function createDanmuInput() {
   input.addEventListener('input', () => (len.innerText = input.value.length.toString()))
 
   // 监听回车发送
-  input.addEventListener('keydown', (e) => {
+  window.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      // 发送
-      sendDanmu(input.value.trim())
-      // 清空
-      input.value = ''
+      if (inputStatus) {
+        // 发送
+        sendDanmu(input.value.trim())
+        // 清空
+        input.value = ''
+        len.innerText = '0'
+        changeInput(false)
+      } else {
+        changeBtn(true)
+        changeInput(true)
+      }
     }
 
     if (e.key === 'Escape') {
       changeInput(false)
+      changeBtn(false)
     }
   })
 }
