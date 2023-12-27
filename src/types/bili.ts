@@ -40,6 +40,7 @@ export interface UserInfo {
       uid: number
       uname: string
       face: string
+      official_verify: {}
     }
     exp: { master_level: {} }
     follower_num: number

@@ -1,6 +1,8 @@
 import 'dotenv/config'
-import { BrowserWindow, app } from 'electron'
+import { BrowserWindow, app, ipcMain } from 'electron'
 import mainWin from './windows/main'
+import info from '../package.json'
+import { isHaveUpdate } from './utils/autoUpdate'
 
 let win: BrowserWindow | undefined
 function main() {
@@ -18,7 +20,9 @@ function main() {
         win.focus()
       }
     })
-    app.whenReady().then(() => mainWin())
+    app.whenReady().then(async () => {
+      win = await mainWin()
+    })
   } else {
     app.quit()
   }

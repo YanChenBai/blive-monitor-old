@@ -6,5 +6,6 @@
   "execMap": {
     "js": "pnpm -v"
   },
-  "ext": "ts, json, css, html"
+  "ext": "ts, json, css, html",
+  "ignore": ["config.json"]
 }

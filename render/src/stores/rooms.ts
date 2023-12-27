@@ -7,6 +7,10 @@ export interface Room {
   short_id: string
   name: string
   face: string
+  live_status: number
+  tags: string
+  title: string
+  medal_name: string
 }
 
 export const useRoomsStore = defineStore(

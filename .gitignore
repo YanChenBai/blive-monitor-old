@@ -30,3 +30,5 @@ coverage
 build
 *.db
 env.ts
+updatePath
+icon

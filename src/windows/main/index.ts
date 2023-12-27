@@ -1,19 +1,27 @@
-import { BrowserWindow, Menu, app, ipcMain } from 'electron'
+import { BrowserWindow, Menu, app, ipcMain, webContents } from 'electron'
 import path from 'path'
 import liveWin from '../live'
 import biliWin from '../bili'
 import type { UserInfo, RoomInfo, OpenRoom } from '../../types/bili'
+import { isHaveUpdate, update } from '../../utils/autoUpdate'
 
-async function getInfo(id: string) {
-  const { uid, short_id } = await fetch(
-    `https://api.live.bilibili.com/room/v1/Room/get_info?id=${id}`
+/**
+ * 获取直播间信息
+ * @param room_id 房间号, 支持短号
+ */
+async function getInfo(room_id: string) {
+  const { uid, short_id, tags, live_status, title } = await fetch(
+    `https://api.live.bilibili.com/room/v1/Room/get_info?id=${room_id}`
   )
     .then((res) => res.json() as Promise<RoomInfo>)
     .then((res) => {
       if (res.code === 0) {
         return {
           uid: res.data.uid,
-          short_id: res.data.short_id
+          short_id: res.data.short_id,
+          tags: res.data.tags,
+          live_status: res.data.live_status,
+          title: res.data.title
         }
       } else {
         return Promise.reject(res)
@@ -29,7 +37,11 @@ async function getInfo(id: string) {
           room_id: String(res.data.room_id),
           short_id: String(short_id),
           name: res.data.info.uname,
-          face: res.data.info.face
+          face: res.data.info.face,
+          live_status: live_status,
+          tags: tags,
+          title,
+          medal_name: res.data.medal_name
         }
       } else {
         return Promise.reject(res)
@@ -84,9 +96,7 @@ export default async function () {
   })
 
   // 获取直播间信息
-  ipcMain.on('main:getRoomInfo', (event, id) => {
-    getInfo(id).then((res) => event.reply('main:getRoomInfo', res))
-  })
+  ipcMain.handle('main:getRoomInfo', async (_e, room_id: string) => await getInfo(room_id))
 
   // 打开直播
   ipcMain.on('main:openLive', (_event, options: OpenRoom) => {

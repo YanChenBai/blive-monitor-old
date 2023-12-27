@@ -9,8 +9,8 @@
     "dev:render": "cd ./render && pnpm dev",
     "build:render": "cd ./render && pnpm build",
     "dev": "chcp 65001 && electron .",
-    "build:ts": "tsc && node ./build.js",
-    "build:electron": "pnpm build:ts && electron-builder"
+    "build:ts": "node ./buildStep/updateVersion.js && tsc && node ./buildStep/copyAssets.js",
+    "build:electron": "pnpm build:ts && electron-builder && node ./buildStep/getSha256.js"
   },
   "keywords": [],
   "author": "",
@@ -27,8 +27,8 @@
     "@types/uuid": "^9.0.7",
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
+    "electron-updater": "^6.1.7",
     "log4js": "^6.9.1",
-    "lowdb": "^7.0.1",
     "uuid": "^9.0.1"
   }
 }

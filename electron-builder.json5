@@ -1,7 +1,6 @@
 {
-  files: ['./dist', './node_modules', './render/dist'],
-  extraResources: ['./dist/icons'],
-  productName: 'blive-monitor',
+  files: ['./dist', './node_modules', './render/dist', './package.json'],
+  productName: 'Blive Monitor',
   directories: {
     output: 'build'
   },

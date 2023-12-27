@@ -42,20 +42,20 @@ function sendDanmu(msg: string) {
 function createDanmuInput() {
   // 获取html元素
   const inputHtml = `
-  <div class="btns close">
-  <div class="close-win">
-    <button class="btn">关</button>
+  <div class='btns close'>
+  <div class='close-win'>
+    <button class='btn'>关</button>
   </div>
-  <div class="input-switch">
-    <button class="btn">弹</button>
+  <div class='input-switch'>
+    <button class='btn'>弹</button>
   </div>
-  <div class="min-win">
-    <button class="btn">小</button>
+  <div class='min-win'>
+    <button class='btn'>小</button>
   </div>
 </div>
-<div class="input-wrap close">
-  <input type="text" placeholder="发个弹幕呗~" maxlength="20" />
-  <div class="length"><span class="value">0</span>/20</div>
+<div class='input-wrap close'>
+  <input type='text' placeholder='发个弹幕呗~' maxlength='20' />
+  <div class='length'><span class='value'>0</span>/20</div>
 </div>
 
   `
@@ -106,7 +106,7 @@ function createDanmuInput() {
   }
 
   // 监听鼠标进入窗口和离开窗口事件
-  document.addEventListener('mouseenter', () => {
+  document.addEventListener('mousemove', () => {
     changeBtn(true)
   })
 
@@ -150,13 +150,6 @@ function createDanmuInput() {
   })
 }
 
-/** 添加拖拽栏 */
-function createDragMenu() {
-  const menu = document.createElement('div')
-  menu.classList.add('drag-menu')
-  document.body.appendChild(menu)
-}
-
 /** 清除弹窗 */
 function clearPopover() {
   setTimeout(() => clearInterval(timer), 10000)
@@ -168,10 +161,9 @@ function clearPopover() {
   }, 100)
 }
 
-window.onload = () => {
-  createDanmuInput()
-  createDragMenu()
+window.addEventListener('DOMContentLoaded', () => createDanmuInput(), { once: true })
 
+window.onload = () => {
   // 等待livePlayer对象挂载
   awaitLivePlayer().then(() => {
     // 启用网页全屏

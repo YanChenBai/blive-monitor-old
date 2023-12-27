@@ -26,9 +26,11 @@
             </template>
             <template #description>
               <n-text text-14px>
-                {{ item.room_id }}
                 <template v-if="item.short_id && item.short_id !== '0'">
-                  <n-divider vertical />{{ item.short_id }}
+                  {{ item.short_id }}
+                </template>
+                <template v-else>
+                  {{ item.room_id }}
                 </template>
               </n-text>
             </template>
@@ -73,17 +75,30 @@ const message = useMessage()
 const { rooms } = storeToRefs(useRoomsStore())
 const keyword = ref<string>('')
 
-function add() {
+async function add() {
   const regex = /^\d+$/
-  if (!regex.test(keyword.value)) {
+  const val = keyword.value.trim()
+
+  if (!regex.test(val)) {
     message.error('请输入正确格式的房间号!')
     return
   }
-  if (keyword.value.trim().length <= 0) {
+
+  if (val.length <= 0) {
     message.error('请输入房间号!')
     return
   }
-  window.electron.ipcRenderer.send('main:getRoomInfo', keyword.value)
+
+  const room = await window.electron.getRoomInfo(val)
+  const index = rooms.value.findIndex((item) => item.room_id === room.room_id)
+  room.tags = room.tags.replace(new RegExp(',', 'g'), ' ')
+
+  if (index === -1) {
+    rooms.value.push(room)
+  } else {
+    rooms.value[index] = room
+    message.error('加过了!')
+  }
 }
 
 function remove(index: number) {
@@ -104,23 +119,31 @@ const searchList = computed(() => {
   else {
     return rooms.value.filter((item) => {
       const val = keyword.value.toLowerCase()
+
       // 修改了数据结构兼容
-      if (!item.short_id) item.short_id = ''
+      const room = Object.assign(
+        {
+          uid: '',
+          room_id: '',
+          short_id: '',
+          name: '',
+          face: '',
+          live_status: 0,
+          tags: '',
+          title: '',
+          medal_name: ''
+        },
+        item
+      )
       return (
-        item.name.toLowerCase().includes(val) ||
-        item.room_id.includes(val) ||
-        item.short_id.includes(val) ||
-        match(item.name, val, { continuous: true }) !== null
+        room.name.toLowerCase().includes(val) ||
+        room.room_id.includes(val) ||
+        room.short_id.includes(val) ||
+        match(room.name, val, { continuous: true }) !== null ||
+        match(room.tags, val, { continuous: true }) !== null ||
+        match(room.medal_name, val, { continuous: true }) !== null
       )
     })
-  }
-})
-
-window.electron.ipcRenderer.on('main:getRoomInfo', (data: Room) => {
-  const index = rooms.value.findIndex((item) => item.room_id === data.room_id)
-  if (index === -1) rooms.value.push(data)
-  else {
-    message.error('加过了!')
   }
 })
 
