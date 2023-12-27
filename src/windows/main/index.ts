@@ -60,6 +60,11 @@ export default async function () {
 
   win.loadURL(loadURL)
 
+  // 关闭主窗口退出整个应用
+  win.on('close', () => {
+    app.quit()
+  })
+
   if (!app.isPackaged) {
     win.webContents.openDevTools({
       mode: 'detach',
@@ -73,23 +78,29 @@ export default async function () {
     app.quit()
   })
 
-  /** 最小化窗口  */
+  // 最小化窗口
   ipcMain.on('main:min', () => {
     win.minimize()
   })
 
-  /** 获取直播间信息 */
+  // 获取直播间信息
   ipcMain.on('main:getRoomInfo', (event, id) => {
     getInfo(id).then((res) => event.reply('main:getRoomInfo', res))
   })
 
-  /** 打开直播 */
+  // 打开直播
   ipcMain.on('main:openLive', (_event, options: OpenRoom) => {
     liveWin(options)
   })
 
-  /** 打开b站首页登录 */
+  // 打开b站首页登录
   ipcMain.on('main:openBili', () => biliWin())
+
+  // 获取窗口数量, 排除主窗口
+  ipcMain.handle(
+    'main:winCount',
+    () => BrowserWindow.getAllWindows().filter((item) => item.id !== win.id).length
+  )
 
   Menu.setApplicationMenu(null)
   return win

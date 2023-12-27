@@ -1,12 +1,6 @@
 import { ipcRenderer } from 'electron'
-import fs from 'fs'
-import path from 'path'
 
-function isLiveRoom() {
-  const urlPattern = /^https:\/\/live\.bilibili\.com\/(\d+)$/
-  return urlPattern.test(window.location.href)
-}
-
+/** 等待livePlayer */
 async function awaitLivePlayer() {
   return new Promise<void>((res) => {
     const timer = setInterval(() => {
@@ -14,11 +8,11 @@ async function awaitLivePlayer() {
         clearInterval(timer)
         res()
       }
-    }, 100)
+    }, 50)
   })
 }
 
-// 发送弹幕
+/** 发送弹幕 */
 function sendDanmu(msg: string) {
   if (msg.length <= 0) {
     alert('请输入弹幕内容')
@@ -156,7 +150,7 @@ function createDragMenu() {
   document.body.appendChild(menu)
 }
 
-// 清除弹窗
+/** 清除弹窗 */
 function clearPopover() {
   setTimeout(() => clearInterval(timer), 10000)
   const timer = setInterval(() => {
@@ -173,11 +167,11 @@ window.onload = () => {
 
   // 等待livePlayer对象挂载
   awaitLivePlayer().then(() => {
-    /** 启用网页全屏 */
+    // 启用网页全屏
     window.livePlayer?.setFullscreenStatus(1)
   })
 
-  /** 关闭弹幕侧边栏 */
+  // 关闭弹幕侧边栏
   document.body.setAttribute('class', `${document.body.getAttribute('class')} hide-aside-area`)
 
   clearPopover()

@@ -12,6 +12,7 @@
 
 declare interface Window {
   electron: {
+    winCount: () => Promise<number>
     ipcRenderer: {
       send(channel: string, ...args: any[]): void
       on(channel: string, call: (data: any) => void): void

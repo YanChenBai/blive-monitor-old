@@ -11,7 +11,7 @@
         BLIVE MONITOR
       </n-gradient-text>
     </div>
-    <div right-0 no-drag m-4px>
+    <div no-drag p-r-6px p-t-5px>
       <n-button-group ref="menuBtnsRef">
         <n-button size="tiny" type="primary" tertiary @click="$emit('min')">
           <n-icon>
@@ -27,7 +27,6 @@
 </template>
 
 <script setup lang="ts">
-import { useTitle } from '@vueuse/core'
 import { useDialog } from 'naive-ui'
 import MingcuteMinimizeFill from './Icons/MingcuteMinimizeFill.vue'
 import MingcuteCloseFill from './Icons/MingcuteCloseFill.vue'
@@ -36,18 +35,23 @@ const emit = defineEmits<{
   (e: 'close'): void
   (e: 'min'): void
 }>()
-const dialog = useDialog()
-function close() {
-  dialog.warning({
-    title: '警告',
-    content: '你确定？这样会关闭所有直播间哦',
-    positiveText: '确定',
-    negativeText: '不确定',
-    onPositiveClick: () => emit('close')
-  })
-}
 
-const title = useTitle()
+const dialog = useDialog()
+
+async function close() {
+  const count = await window.electron.winCount()
+  if (count === 0) {
+    emit('close')
+  } else {
+    dialog.warning({
+      title: '警告',
+      content: '你确定？这样会关闭所有直播间哦',
+      positiveText: '确定',
+      negativeText: '不确定',
+      onPositiveClick: () => emit('close')
+    })
+  }
+}
 </script>
 
 <style scoped>

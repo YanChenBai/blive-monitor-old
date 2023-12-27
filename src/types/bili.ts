@@ -59,6 +59,5 @@ export interface UserInfo {
 export interface OpenRoom {
   name: string
   face: string
-  room_id: string
-  model: boolean // 播放的方式
+  room_id: string // 需要时真实房间号
 }

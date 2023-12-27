@@ -7,6 +7,7 @@
       </n-input-group>
       <n-button type="primary" m-l-6px @click="openBili()">登录</n-button>
     </div>
+
     <div m-t-10px of-hidden>
       <n-scrollbar style="height: calc(100vh - 96px)">
         <n-card
@@ -26,9 +27,9 @@
             <template #description>
               <n-text text-14px>
                 {{ item.room_id }}
-                <template v-if="item.short_id !== '0'">
-                  <n-divider vertical />{{ item.short_id }}</template
-                >
+                <template v-if="item.short_id && item.short_id !== '0'">
+                  <n-divider vertical />{{ item.short_id }}
+                </template>
               </n-text>
             </template>
             <template #header-extra>
@@ -71,7 +72,6 @@ defineOptions({ name: 'HomeView' })
 const message = useMessage()
 const { rooms } = storeToRefs(useRoomsStore())
 const keyword = ref<string>('')
-const model = ref(0)
 
 function add() {
   const regex = /^\d+$/
@@ -91,7 +91,7 @@ function remove(index: number) {
 }
 
 function openLive(room: Room) {
-  window.electron.ipcRenderer.send('main:openLive', { ...room, model: model.value === 1 })
+  window.electron.ipcRenderer.send('main:openLive', { ...room })
 }
 
 function openBili() {
@@ -104,9 +104,8 @@ const searchList = computed(() => {
   else {
     return rooms.value.filter((item) => {
       const val = keyword.value.toLowerCase()
-      let { short_id } = item
       // 修改了数据结构兼容
-      if (!short_id) short_id = ''
+      if (!item.short_id) item.short_id = ''
       return (
         item.name.toLowerCase().includes(val) ||
         item.room_id.includes(val) ||

@@ -7,6 +7,7 @@
   "scripts": {
     "init:render": "cd ./render && pnpm i",
     "dev:render": "cd ./render && pnpm dev",
+    "build:render": "cd ./render && pnpm build",
     "dev": "chcp 65001 && electron .",
     "build:ts": "tsc && node ./build.js",
     "build:electron": "pnpm build:ts && electron-builder"
@@ -27,6 +28,7 @@
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
     "log4js": "^6.9.1",
+    "lowdb": "^7.0.1",
     "uuid": "^9.0.1"
   }
 }
