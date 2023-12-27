@@ -5,7 +5,7 @@ import type { OpenRoom } from '../../types/bili'
 import axios from 'axios'
 
 const iconDirPath = app.isPackaged
-  ? path.resolve(process.resourcesPath, 'icons')
+  ? path.resolve(process.resourcesPath + '\\icons')
   : path.resolve(__dirname, '../../../icon')
 
 /**
@@ -69,7 +69,7 @@ export default async function (options: OpenRoom) {
   const css = fs.readFileSync(path.resolve(__dirname, 'index.css')).toString()
   win.webContents.insertCSS(css)
 
-  win.loadURL(`https://live.bilibili.com/${options.room_id}?win_id=${win_id}`)
+  win.loadURL(`https://live.bilibili.com/blanc/${options.room_id}?win_id=${win_id}`)
 
   // 监听窗口关闭
   ipcMain.on(`close:${win_id}`, () => win.close())

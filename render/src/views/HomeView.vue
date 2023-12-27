@@ -5,7 +5,8 @@
         <n-input w-full type="primary" v-model:value="keyword" placeholder="输入房间号👌" />
         <n-button type="primary" @click="add()">添加</n-button>
       </n-input-group>
-      <n-button type="primary" m-l-6px @click="openBili()">登录</n-button>
+      <n-button type="primary" m-l-6px m-r-6px @click="openBili()">登录</n-button>
+      <More />
     </div>
 
     <div m-t-10px of-hidden>
@@ -63,6 +64,7 @@
 <script setup lang="ts">
 import { type Room, useRoomsStore } from '@/stores/rooms'
 import MaterialSymbolsDeleteRounded from '@/components/Icons/MaterialSymbolsDeleteRounded.vue'
+import More from '@/components/More.vue'
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { closeEvents, minEvents } from '@/utils/events'

@@ -1,6 +1,7 @@
 declare interface Window {
   electron: {
     winCount: () => Promise<number>
+    getVersion: () => Promise<string>
     getRoomInfo: (room_id: string) => Promise<{
       uid: string
       room_id: string

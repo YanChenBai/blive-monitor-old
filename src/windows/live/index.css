@@ -46,11 +46,14 @@ html {
 }
 
 /** 移除一下杂七杂八的东西 */
+.shop-popover,
 #link-footer-vm,
 #sections-vm,
 #sidebar-vm,
 #room-ssr-vm,
 #head-info-vm,
+#pk-vm,
+#awesome-pk-vm,
 #gift-control-vm {
   display: none !important;
 }
@@ -82,7 +85,7 @@ body::after {
 .btns {
   position: absolute;
   z-index: 9999999;
-  right: 10px;
+  right: 20px;
   top: 50vh;
   transition: all 0.2s;
   transform: translate(0, -50%);
@@ -93,7 +96,7 @@ body::after {
 }
 
 .btns.close {
-  transform: translate(calc(100% + 10px), -50%);
+  transform: translate(calc(100% + 20px), -50%);
 }
 
 .btn {
@@ -146,7 +149,7 @@ body::after {
   display: flex;
   position: absolute;
   z-index: 9999;
-  right: 56px;
+  right: 66px;
   top: 50vh;
   transform: translateY(-50%);
   overflow: hidden;

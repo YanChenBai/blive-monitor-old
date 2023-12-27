@@ -1,8 +1,17 @@
 import 'dotenv/config'
-import { BrowserWindow, app, ipcMain } from 'electron'
+import { BrowserWindow, app } from 'electron'
 import mainWin from './windows/main'
-import info from '../package.json'
-import { isHaveUpdate } from './utils/autoUpdate'
+import path from 'path'
+import { isExists } from './utils/isExists'
+import AppUpdate, { Platform, Origin, ONStatus } from './utils/autoUpdate'
+
+function checkIconsDir() {
+  // 检查icons文件夹
+  const iconDirPath = app.isPackaged
+    ? path.resolve(process.resourcesPath + '\\icons')
+    : path.resolve(__dirname, '../../../icon')
+  isExists(iconDirPath)
+}
 
 let win: BrowserWindow | undefined
 function main() {
@@ -13,6 +22,9 @@ function main() {
   // 单实例锁
   const gotTheLock = app.requestSingleInstanceLock()
   if (gotTheLock) {
+    // 一些初始化的东西
+    checkIconsDir()
+
     // 当运行第二个实例时，将焦点聚焦到主窗口
     app.on('second-instance', () => {
       if (win) {
@@ -20,6 +32,7 @@ function main() {
         win.focus()
       }
     })
+
     app.whenReady().then(async () => {
       win = await mainWin()
     })

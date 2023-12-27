@@ -33,6 +33,7 @@ import { darkTheme } from 'naive-ui'
 import { RouterView } from 'vue-router'
 import WinMenu from './components/WinMenu.vue'
 import { closeEvents, minEvents } from '@/utils/events'
+console.log(window.electron.getVersion())
 
 function close() {
   closeEvents.forEach((event) => event())

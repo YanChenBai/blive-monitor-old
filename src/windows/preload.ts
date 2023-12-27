@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 contextBridge.exposeInMainWorld('electron', {
   winCount: () => ipcRenderer.invoke('main:winCount'),
   getRoomInfo: (room_id: string) => ipcRenderer.invoke('main:getRoomInfo', room_id),
+  getVersion: () => ipcRenderer.invoke('main:getVersion'),
   ipcRenderer: {
     send: ipcRenderer.send,
     on: (channel: string, call: (data: any) => void) =>

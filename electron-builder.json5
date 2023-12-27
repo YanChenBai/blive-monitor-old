@@ -1,6 +1,6 @@
 {
   files: ['./dist', './node_modules', './render/dist', './package.json'],
-  productName: 'Blive Monitor',
+  productName: 'blive-monitor',
   directories: {
     output: 'build'
   },

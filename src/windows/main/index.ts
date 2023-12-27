@@ -3,7 +3,7 @@ import path from 'path'
 import liveWin from '../live'
 import biliWin from '../bili'
 import type { UserInfo, RoomInfo, OpenRoom } from '../../types/bili'
-import { isHaveUpdate, update } from '../../utils/autoUpdate'
+import config from '../../config.json'
 
 /**
  * 获取直播间信息
@@ -111,6 +111,8 @@ export default async function () {
     'main:winCount',
     () => BrowserWindow.getAllWindows().filter((item) => item.id !== win.id).length
   )
+
+  ipcMain.handle('main:getVersion', async () => config.version)
 
   Menu.setApplicationMenu(null)
   return win

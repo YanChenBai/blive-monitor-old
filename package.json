@@ -4,6 +4,7 @@
   "description": "",
   "main": "./dist/main.js",
   "type": "commonjs",
+  "repository": "github:YanChenBai/blive-monitor",
   "scripts": {
     "init:render": "cd ./render && pnpm i",
     "dev:render": "cd ./render && pnpm dev",
@@ -27,8 +28,7 @@
     "@types/uuid": "^9.0.7",
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
-    "electron-updater": "^6.1.7",
-    "log4js": "^6.9.1",
-    "uuid": "^9.0.1"
+    "electron-log": "^5.0.2",
+    "update-electron-app": "^3.0.0"
   }
 }
