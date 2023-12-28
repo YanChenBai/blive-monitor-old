@@ -1,9 +1,10 @@
-import { BrowserWindow, Menu, app, ipcMain, webContents } from 'electron'
+import { BrowserWindow, Menu, app, ipcMain } from 'electron'
 import path from 'path'
 import liveWin from '../live'
 import biliWin from '../bili'
 import type { UserInfo, RoomInfo, OpenRoom } from '../../types/bili'
-import config from '../../config.json'
+import autoUpdater from '../../utils/autoUpdater'
+import { logger } from '../../utils/logger'
 
 /**
  * 获取直播间信息
@@ -66,7 +67,7 @@ export default async function () {
     }
   })
 
-  const loadURL = app.isPackaged
+  const loadURL = !app.isPackaged
     ? path.resolve(__dirname, '../../../render/dist/index.html')
     : 'http://localhost:5173'
 
@@ -77,7 +78,7 @@ export default async function () {
     app.quit()
   })
 
-  if (!app.isPackaged) {
+  if (app.isPackaged) {
     win.webContents.openDevTools({
       mode: 'detach',
       activate: true
@@ -112,8 +113,10 @@ export default async function () {
     () => BrowserWindow.getAllWindows().filter((item) => item.id !== win.id).length
   )
 
-  ipcMain.handle('main:getVersion', async () => config.version)
+  // 获取当前版本
+  ipcMain.handle('main:getVersion', () => autoUpdater.currentVersion.version)
 
   Menu.setApplicationMenu(null)
+
   return win
 }

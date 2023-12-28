@@ -27,9 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import { useDialog } from 'naive-ui'
+import { useDialog, NProgress } from 'naive-ui'
 import MingcuteMinimizeFill from './Icons/MingcuteMinimizeFill.vue'
 import MingcuteCloseFill from './Icons/MingcuteCloseFill.vue'
+import { useNotification } from 'naive-ui'
+import { h, ref } from 'vue'
+
 defineOptions({ name: 'WinMenu' })
 const emit = defineEmits<{
   (e: 'close'): void

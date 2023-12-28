@@ -2,6 +2,13 @@ declare interface Window {
   electron: {
     winCount: () => Promise<number>
     getVersion: () => Promise<string>
+    checkUpdate: () => Promise<{
+      releaseNotes: string
+      releaseName: string
+      releaseDate: string
+      version: string
+      tag: string
+    }>
     getRoomInfo: (room_id: string) => Promise<{
       uid: string
       room_id: string

@@ -4,6 +4,14 @@
   directories: {
     output: 'build'
   },
+  publish: [
+    {
+      provider: 'github',
+      owner: 'YanChenBai',
+      repo: 'blive-monitor',
+      releaseType: 'release'
+    }
+  ],
   nsis: {
     oneClick: false,
     createDesktopShortcut: true,

@@ -10,8 +10,8 @@
     "dev:render": "cd ./render && pnpm dev",
     "build:render": "cd ./render && pnpm build",
     "dev": "chcp 65001 && electron .",
-    "build:ts": "node ./buildStep/updateVersion.js && tsc && node ./buildStep/copyAssets.js",
-    "build:electron": "pnpm build:ts && electron-builder && node ./buildStep/getSha256.js"
+    "build:ts": " tsc && node ./buildStep/copyAssets.js",
+    "build:electron": "pnpm build:ts && electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +29,8 @@
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
     "electron-log": "^5.0.2",
-    "update-electron-app": "^3.0.0"
+    "electron-updater": "^6.1.7",
+    "log4js": "^6.9.1",
+    "yaml": "^2.3.4"
   }
 }

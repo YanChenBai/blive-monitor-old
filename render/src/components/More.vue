@@ -1,18 +1,26 @@
 <template>
-  <n-button @click="showModal = true" type="primary" quaternary> 更多 </n-button>
-  <n-modal v-model:show="showModal" w-400px>
-    <n-card title="更多" :bordered="false" size="huge" role="dialog" aria-modal="true" closable>
-      <n-space>
-        <n-tag>版本 v0.0.4</n-tag>
-      </n-space>
-    </n-card>
-  </n-modal>
+  <n-button type="primary" quaternary @click="checkUpdate" :loading="loading"> 更新 </n-button>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
 
 defineOptions({ name: 'MoreModal' })
-const showModal = ref(false)
+
+const loading = ref(false)
+async function checkUpdate() {
+  loading.value = true
+  try {
+    const res = await window.electron.checkUpdate()
+    console.log(res)
+  } catch (error) {
+    console.error(error)
+  }
+  loading.value = false
+}
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped>
+:deep(.releaseNotes ul) {
+  padding-left: 10px;
+}
+</style>
