@@ -1,5 +1,5 @@
 <template>
-  <div flex h-32px w-full class="menu">
+  <div flex h-32px w-full class="menu" bg="#1d1d1d">
     <div w-full flex items-center p-l-10px drag>
       <n-gradient-text
         class="title"
@@ -27,11 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import { useDialog, NProgress } from 'naive-ui'
+import { useDialog } from 'naive-ui'
 import MingcuteMinimizeFill from './Icons/MingcuteMinimizeFill.vue'
 import MingcuteCloseFill from './Icons/MingcuteCloseFill.vue'
-import { useNotification } from 'naive-ui'
-import { h, ref } from 'vue'
 
 defineOptions({ name: 'WinMenu' })
 const emit = defineEmits<{
@@ -41,26 +39,22 @@ const emit = defineEmits<{
 
 const dialog = useDialog()
 
+const createDialog = () =>
+  dialog.warning({
+    title: '警告',
+    content: '你确定？这样会关闭所有直播间哦',
+    positiveText: '确定',
+    negativeText: '不确定',
+    onPositiveClick: () => emit('close')
+  })
+
 async function close() {
-  const count = await window.electron.winCount()
-  if (count === 0) {
-    emit('close')
-  } else {
-    dialog.warning({
-      title: '警告',
-      content: '你确定？这样会关闭所有直播间哦',
-      positiveText: '确定',
-      negativeText: '不确定',
-      onPositiveClick: () => emit('close')
-    })
-  }
+  const count = await window.blive.winCount()
+  count === 0 ? emit('close') : createDialog()
 }
 </script>
 
 <style scoped>
-.menu {
-  background: #1d1d1d;
-}
 .title {
   font-weight: 600;
   font-size: 16px;

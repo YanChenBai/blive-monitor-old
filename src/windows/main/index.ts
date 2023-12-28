@@ -78,12 +78,10 @@ export default async function () {
     app.quit()
   })
 
-  if (app.isPackaged) {
-    win.webContents.openDevTools({
-      mode: 'detach',
-      activate: true
-    })
-  }
+  win.webContents.openDevTools({
+    mode: 'detach',
+    activate: true
+  })
 
   /** 关闭窗口 */
   ipcMain.on('main:close', () => {
@@ -112,9 +110,6 @@ export default async function () {
     'main:winCount',
     () => BrowserWindow.getAllWindows().filter((item) => item.id !== win.id).length
   )
-
-  // 获取当前版本
-  ipcMain.handle('main:getVersion', () => autoUpdater.currentVersion.version)
 
   Menu.setApplicationMenu(null)
 

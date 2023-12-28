@@ -6,7 +6,7 @@
         <n-button type="primary" @click="add()">添加</n-button>
       </n-input-group>
       <n-button type="primary" m-l-6px m-r-6px @click="openBili()">登录</n-button>
-      <More />
+      <Updater />
     </div>
 
     <div m-t-10px of-hidden>
@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import { type Room, useRoomsStore } from '@/stores/rooms'
 import MaterialSymbolsDeleteRounded from '@/components/Icons/MaterialSymbolsDeleteRounded.vue'
-import More from '@/components/More.vue'
+import Updater from '@/components/Updater.vue'
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { closeEvents, minEvents } from '@/utils/events'
@@ -91,7 +91,7 @@ async function add() {
     return
   }
 
-  const room = await window.electron.getRoomInfo(val)
+  const room = await window.blive.getRoomInfo(val)
   const index = rooms.value.findIndex((item) => item.room_id === room.room_id)
   room.tags = room.tags.replace(new RegExp(',', 'g'), ' ')
 
@@ -108,11 +108,11 @@ function remove(index: number) {
 }
 
 function openLive(room: Room) {
-  window.electron.ipcRenderer.send('main:openLive', { ...room })
+  window.blive.ipcRenderer.send('main:openLive', { ...room })
 }
 
 function openBili() {
-  window.electron.ipcRenderer.send('main:openBili')
+  window.blive.ipcRenderer.send('main:openBili')
 }
 
 // 搜索
@@ -151,12 +151,12 @@ const searchList = computed(() => {
 
 // 注册关闭按钮事件
 closeEvents.push(() => {
-  window.electron.ipcRenderer.send('main:close')
+  window.blive.ipcRenderer.send('main:close')
 })
 
 // 注册最小化按钮事件
 minEvents.push(() => {
-  window.electron.ipcRenderer.send('main:min')
+  window.blive.ipcRenderer.send('main:min')
 })
 </script>
 
