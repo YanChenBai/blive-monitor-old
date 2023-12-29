@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
@@ -20,8 +21,6 @@ export const useRoomsStore = defineStore(
     return { rooms }
   },
   {
-    persist: {
-      paths: ['rooms']
-    }
+    persist: true
   }
 )

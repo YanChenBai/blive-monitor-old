@@ -7,12 +7,15 @@ import { initAutoUpdater } from './utils/autoUpdater'
 
 function checkIconsDir() {
   // 检查icons文件夹
-  const iconDirPath = path.join(app.getAppPath(), 'resources', 'icons')
+  const iconDirPath = app.isPackaged
+    ? path.resolve(process.resourcesPath + '\\icons')
+    : path.resolve(__dirname, '../../../icon')
   isExists(iconDirPath)
 }
 
 let win: BrowserWindow | undefined
 function main() {
+  app.setAppUserModelId('Blive Monitor')
   app.on('window-all-closed', () => {
     app.quit()
   })

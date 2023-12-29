@@ -3,15 +3,18 @@ import path from 'path'
 import fs from 'fs'
 import type { OpenRoom } from '../../types/bili'
 import axios from 'axios'
-import { getIconPath } from '../../utils/getPath'
 import { logger } from '../../utils/logger'
+
+const iconDirPath = app.isPackaged
+  ? path.resolve(process.resourcesPath + '\\icons')
+  : path.resolve(__dirname, '../../../icon')
 
 /**
  * 查看有没有图标
  * @param room_id 房间id
  */
 function isHaveIcon(room_id: string) {
-  if (fs.existsSync(getIconPath(room_id))) {
+  if (fs.existsSync(path.join(iconDirPath, `${room_id}.png`))) {
     return true
   } else {
     return false
@@ -26,7 +29,7 @@ function isHaveIcon(room_id: string) {
 async function saveFace(room_id: string, url: string) {
   try {
     const response = await axios.get(url, { responseType: 'arraybuffer' })
-    fs.writeFileSync(getIconPath(room_id), response.data)
+    fs.writeFileSync(path.resolve(iconDirPath, room_id + '.png'), response.data)
   } catch (error) {
     logger.error(error)
   }
@@ -35,7 +38,7 @@ async function saveFace(room_id: string, url: string) {
 export default async function (options: OpenRoom) {
   // 看看要不要保存图标
   if (!isHaveIcon(options.room_id)) await saveFace(options.room_id, options.face)
-  const icon = getIconPath(options.room_id)
+  const icon = path.resolve(iconDirPath, options.room_id + '.png')
 
   // 创建窗口
   const win = new BrowserWindow({

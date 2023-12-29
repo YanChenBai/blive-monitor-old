@@ -15,8 +15,9 @@ let isUpdateAvailable = false
 
 // 新建通知
 function newNotification(title: string, body: string) {
-  const icon = path.join(__dirname, '../../blivemonitor.ico')
-
+  const icon = app.isPackaged
+    ? path.resolve(process.resourcesPath + '\\blivemonitor.ico')
+    : path.join(__dirname, '../../blivemonitor.ico')
   return new Notification({
     title,
     body,
