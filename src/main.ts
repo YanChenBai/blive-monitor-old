@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import { BrowserWindow, app } from 'electron'
+import { BrowserWindow, app, globalShortcut } from 'electron'
 import mainWin from './windows/main'
 import path from 'path'
 import { isExists } from './utils/isExists'
@@ -37,6 +37,10 @@ function main() {
     app.whenReady().then(async () => {
       win = await mainWin()
       initAutoUpdater(win)
+
+      globalShortcut.register('CommandOrControl+Shift+i', function () {
+        win?.webContents.openDevTools()
+      })
     })
   } else {
     app.quit()

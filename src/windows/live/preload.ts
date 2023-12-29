@@ -222,6 +222,20 @@ function changeVolume() {
   })
 }
 
+/** 匹配可输入的最大弹幕 */
+function matchMaxDanmu() {
+  const regex = /0\/(\d+)/
+  return new Promise<number>((res) => {
+    const timer = setInterval(() => {
+      const dom = document.querySelector('.input-limit-hint') as HTMLDivElement
+      if (!dom) return
+      const match = dom.innerText.match(regex)
+      clearInterval(timer)
+      return res(match ? Number(match[1]) : 20)
+    }, 200)
+  })
+}
+
 /** 添加头像和主播名字 */
 function addFaceAndName() {
   document.querySelector('.room-owner-username')
@@ -242,4 +256,8 @@ window.onload = () => {
 
   clearPopover()
   changeVolume()
+  matchMaxDanmu().then((res) => {
+    const dom = document.querySelector('.input-wrap>input') as HTMLInputElement
+    dom.maxLength = res
+  })
 }

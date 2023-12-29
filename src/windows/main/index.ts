@@ -14,6 +14,7 @@ export default async function () {
     show: true,
     resizable: false,
     backgroundColor: '#101014',
+
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: true,

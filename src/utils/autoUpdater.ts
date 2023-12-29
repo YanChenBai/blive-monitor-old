@@ -37,6 +37,8 @@ export async function initAutoUpdater(win: BrowserWindow) {
 
   // 有新的版本
   autoUpdater.addListener('update-available', (event) => {
+    console.log('available=>', event)
+
     if (isUpdateAvailable) return
     clearInterval(timer)
     isUpdateAvailable = true
@@ -49,6 +51,8 @@ export async function initAutoUpdater(win: BrowserWindow) {
 
   // 下载完成
   autoUpdater.addListener('update-downloaded', (event) => {
+    console.log('downloaded')
+
     isDownloaded = true
     // 通知
     const notification = newNotification(`👌下载完喽 v${event.version}`, '芜湖!')
@@ -78,7 +82,15 @@ export async function initAutoUpdater(win: BrowserWindow) {
   // 获取可更新
   ipcMain.handle('update:check', async () => {
     const res = await autoUpdater.checkForUpdates()
-    return res ? res.updateInfo : null
+    if (res) {
+      if (res.updateInfo.version === autoUpdater.currentVersion.version) {
+        return null
+      } else {
+        return res.updateInfo
+      }
+    } else {
+      return null
+    }
   })
 
   // 下载更新

@@ -64,7 +64,6 @@ const checkUpdate = (showMsg = true) =>
   loadingWrap(loading, 'checkUpdate', async () => {
     try {
       const res = await window.blive.checkUpdate()
-      console.log(res)
       if (!res) showMsg ? message.success('当前已是最新版本!') : ''
       else {
         updateInfo.value = res
