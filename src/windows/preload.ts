@@ -11,6 +11,10 @@ contextBridge.exposeInMainWorld('blive', {
   downloadUpdate: () => ipcRenderer.invoke('update:download'),
   /** 退出并安装 */
   quitAndInstall: () => ipcRenderer.invoke('update:quitAndInstall'),
+  /** 是否已下载 */
+  isDownloaded: () => ipcRenderer.invoke('update:isDownloaded'),
+  /** 是否有跟新 */
+  isUpdateAvailable: () => ipcRenderer.invoke('update:isUpdateAvailable'),
 
   /** ipc */
   ipcRenderer: {

@@ -33,7 +33,7 @@
         <div m-t-10px v-if="updateInfo">
           <n-text type="primary">更新日志 v{{ updateInfo.version }}</n-text>
           <n-scrollbar h-300px>
-            <div v-html="updateInfo.releaseNotes"></div>
+            <div class="release-notes" v-html="updateInfo.releaseNotes"></div>
           </n-scrollbar>
         </div>
       </n-spin>
@@ -60,14 +60,14 @@ const loading = reactive({
 const version = ref<string | undefined>()
 const updateInfo = ref<UpdateInfo | undefined>()
 
-const checkUpdate = () =>
+const checkUpdate = (showMsg = true) =>
   loadingWrap(loading, 'checkUpdate', async () => {
     try {
       const res = await window.blive.checkUpdate()
       console.log(res)
-      if (!res) message.success('当前已是最新版本!')
+      if (!res) showMsg ? message.success('当前已是最新版本!') : ''
       else {
-        updateInfo.value = res.updateInfo
+        updateInfo.value = res
       }
       return res
     } catch (error) {
@@ -78,12 +78,9 @@ const checkUpdate = () =>
 async function downloadUpdate() {
   downloadState.value = 1
   try {
-    window.blive.ipcRenderer.on('update:downloaded', () => {
-      downloadState.value = 2
-    })
-    window.blive.ipcRenderer.on('update:downloadProgress', (event: ProgressInfo) => {
-      percentage.value = Number(event.percent.toFixed(2))
-    })
+    // 先看看是否已近准备好
+    if (await window.blive.isDownloaded()) return (downloadState.value = 2)
+
     await window.blive.downloadUpdate()
   } catch (error) {
     downloadState.value = 0
@@ -94,17 +91,33 @@ function quitAndInstall() {
   window.blive.quitAndInstall()
 }
 
+// 下载流程
+window.blive.ipcRenderer.on('update:downloaded', () => {
+  downloadState.value = 2
+})
+
+window.blive.ipcRenderer.on('update:downloadProgress', (event: ProgressInfo) => {
+  if (downloadState.value === 0) downloadState.value = 1
+  percentage.value = Number(event.percent.toFixed(2))
+})
+
+window.blive.ipcRenderer.on('update:openUpdate', () => {
+  show.value = true
+})
+
 loadingWrap(loading, 'version', () =>
-  window.blive.getVersion().then((res) => {
+  window.blive.getVersion().then(async (res) => {
     version.value = res
+    // 先看看是否已近准备好
+    if (await window.blive.isDownloaded()) return (downloadState.value = 2)
     return res
   })
 )
-checkUpdate()
+checkUpdate(false)
 </script>
 
 <style scoped>
-:deep(.releaseNotes ul) {
+:deep(.release-notes ul) {
   padding-left: 10px;
 }
 </style>

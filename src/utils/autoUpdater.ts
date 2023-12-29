@@ -1,16 +1,93 @@
+import { BrowserWindow, app, Notification, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { logger } from './logger'
 import path from 'path'
-import { BrowserWindow, app } from 'electron'
 
 // 配置自动更新
 if (!app.isPackaged) {
   autoUpdater.updateConfigPath = path.join(__dirname, '../../dev-app-update.yml')
 }
 autoUpdater.logger = logger
-autoUpdater.autoDownload = false
+autoUpdater.autoDownload = true
+
+let isDownloaded = false
+let isUpdateAvailable = false
+
+// 新建通知
+function newNotification(title: string, body: string) {
+  const icon = path.join(__dirname, '../../blivemonitor.ico')
+
+  return new Notification({
+    title,
+    body,
+    icon
+  })
+}
+
+function renderOpenUpdate(win: BrowserWindow) {
+  if (win.isMinimized()) win.show()
+  win.webContents.send('update:openUpdate', true)
+}
 
 // 自动更新初始化
-function initAutoUpdater(win: BrowserWindow) {}
+export async function initAutoUpdater(win: BrowserWindow) {
+  autoUpdater.checkForUpdates()
+  const timer = setInterval(() => autoUpdater.checkForUpdates(), 1000 * 60 * 15)
+
+  // 有新的版本
+  autoUpdater.addListener('update-available', (event) => {
+    if (isUpdateAvailable) return
+    clearInterval(timer)
+    isUpdateAvailable = true
+    win.webContents.send('update:available', true)
+
+    const notification = newNotification(`✨发现新版本 v${event.version}`, '芜湖!')
+    notification.show()
+    notification.addListener('click', () => renderOpenUpdate(win))
+  })
+
+  // 下载完成
+  autoUpdater.addListener('update-downloaded', (event) => {
+    isDownloaded = true
+    // 通知
+    const notification = newNotification(`👌下载完喽 v${event.version}`, '芜湖!')
+    notification.addListener('click', () => renderOpenUpdate(win))
+    notification.show()
+
+    win.webContents.send('update:downloaded', true)
+    // 清除进度条
+    win.setProgressBar(-1)
+  })
+
+  // 进度更新
+  autoUpdater.addListener('download-progress', (info) => {
+    win.setProgressBar(info.percent / 100)
+    win.webContents.send('update:downloadProgress', info)
+  })
+
+  // 更新错误重试
+  autoUpdater.addListener('error', () => {
+    newNotification(`😵 更新错误`, '点击重试').show()
+    win.webContents.send('update:error', false)
+  })
+
+  // 获取当前版本
+  ipcMain.handle('update:version', () => autoUpdater.currentVersion.version)
+
+  // 获取可更新
+  ipcMain.handle('update:check', async () => {
+    const res = await autoUpdater.checkForUpdates()
+    return res ? res.updateInfo : null
+  })
+
+  // 下载更新
+  ipcMain.handle('update:download', async () => await autoUpdater.downloadUpdate())
+
+  // 退出并安装
+  ipcMain.handle('update:quitAndInstall', () => autoUpdater.quitAndInstall())
+
+  ipcMain.handle('update:isDownloaded', () => isDownloaded)
+  ipcMain.handle('update:isUpdateAvailable', () => isUpdateAvailable)
+}
 
 export default autoUpdater

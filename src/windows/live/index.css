@@ -112,10 +112,12 @@ body::after {
   font-size: 16px;
   box-sizing: border-box;
   display: block;
+  font-size: 12px;
 }
 
 .input-switch,
-.min-win {
+.min-win,
+.top-win {
   margin-top: 10px;
 }
 
@@ -141,6 +143,22 @@ body::after {
 }
 .min-win button:hover {
   background: #00adecbe;
+}
+
+.top-win button {
+  background: #64d496;
+  border: 2px solid #8cd1ab;
+}
+.top-win button:hover {
+  background: #90e4b6cb;
+}
+
+.top-win button.top {
+  transform: rotate(180deg);
+}
+
+.top-win button.def {
+  transform: rotate(0deg);
 }
 
 /* 输入框 */
@@ -185,4 +203,20 @@ body::after {
   line-height: 36px;
   color: #464545;
   opacity: 0.8;
+}
+
+.change-volume {
+  background: rgba(0, 0, 0, 0.8);
+  width: 60px;
+  height: 60px;
+  position: absolute;
+  z-index: 999999;
+  left: 50vw;
+  top: 50vh;
+  transform: translateY(-50%) translateX(-50%);
+  line-height: 60px;
+  text-align: center;
+  font-size: 20px;
+  border-radius: 6px;
+  user-select: none;
 }

@@ -3,17 +3,15 @@ import path from 'path'
 import fs from 'fs'
 import type { OpenRoom } from '../../types/bili'
 import axios from 'axios'
-
-const iconDirPath = app.isPackaged
-  ? path.resolve(process.resourcesPath + '\\icons')
-  : path.resolve(__dirname, '../../../icon')
+import { getIconPath } from '../../utils/getPath'
+import { logger } from '../../utils/logger'
 
 /**
  * 查看有没有图标
  * @param room_id 房间id
  */
 function isHaveIcon(room_id: string) {
-  if (fs.existsSync(path.join(iconDirPath, `${room_id}.png`))) {
+  if (fs.existsSync(getIconPath(room_id))) {
     return true
   } else {
     return false
@@ -28,16 +26,16 @@ function isHaveIcon(room_id: string) {
 async function saveFace(room_id: string, url: string) {
   try {
     const response = await axios.get(url, { responseType: 'arraybuffer' })
-    fs.writeFileSync(path.resolve(iconDirPath, room_id + '.png'), response.data)
+    fs.writeFileSync(getIconPath(room_id), response.data)
   } catch (error) {
-    console.error(error)
+    logger.error(error)
   }
 }
 
 export default async function (options: OpenRoom) {
   // 看看要不要保存图标
   if (!isHaveIcon(options.room_id)) await saveFace(options.room_id, options.face)
-  const icon = path.resolve(iconDirPath, options.room_id + '.png')
+  const icon = getIconPath(options.room_id)
 
   // 创建窗口
   const win = new BrowserWindow({
@@ -77,6 +75,12 @@ export default async function (options: OpenRoom) {
   // 最小化窗口
   ipcMain.on(`min:${win_id}`, () => win.minimize())
 
+  // 获取置顶状态
+  ipcMain.handle(`isAlwaysOnTop:${win_id}`, () => win.isAlwaysOnTop())
+  // 设置窗口置顶状态
+  ipcMain.handle(`setAlwaysOnTop:${win_id}`, (_event, is: boolean) => win.setAlwaysOnTop(is))
+
+  win.addListener('ready-to-show', () => win.focus())
   Menu.setApplicationMenu(null)
   return win
 }

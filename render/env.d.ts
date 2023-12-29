@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import type { UpdateCheckResult } from 'electron-updater'
+import type { UpdateInfo } from 'electron-updater'
 import type { Room } from './src/stores/rooms'
 
 declare module 'vue-router' {
@@ -15,11 +15,15 @@ declare global {
       /** 获取当前版本 */
       getVersion: () => Promise<string>
       /** 检查更新 */
-      checkUpdate: () => Promise<UpdateCheckResult>
+      checkUpdate: () => Promise<UpdateInfo>
       /** 下载更新 */
-      downloadUpdate: () => Promise<void>
+      downloadUpdate: () => Promise<string[]>
       /** 退出并安装 */
       quitAndInstall: () => Promise<void>
+      /** 是否已下载 */
+      isDownloaded: () => PromiseM<boolean>
+      /** 是否有跟新 */
+      isUpdateAvailable: () => PromiseM<boolean>
       /**
        * 获取直播间和主播数据
        * @param room_id 房间号

@@ -39,10 +39,10 @@ function sendDanmu(msg: string) {
 }
 
 /** 创建输入框 */
-function createDanmuInput() {
+async function createDanmuInput() {
   // 获取html元素
   const inputHtml = `
-  <div class='btns close'>
+<div class='btns close'>
   <div class='close-win'>
     <button class='btn'>关</button>
   </div>
@@ -51,6 +51,9 @@ function createDanmuInput() {
   </div>
   <div class='min-win'>
     <button class='btn'>小</button>
+  </div>
+  <div class='top-win'>
+    <button class='btn top'>顶</button>
   </div>
 </div>
 <div class='input-wrap close'>
@@ -74,6 +77,7 @@ function createDanmuInput() {
   const btnsWrap = document.querySelector('.btns') as HTMLDivElement
   const closeBtn = document.querySelector('.close-win>button') as HTMLButtonElement
   const minBtn = document.querySelector('.min-win>button') as HTMLButtonElement
+  const topBtn = document.querySelector('.top-win>button') as HTMLButtonElement
   const btn = document.querySelector('.input-switch>button') as HTMLButtonElement
   const inputWrap = document.querySelector('.input-wrap') as HTMLDivElement
   const input = document.querySelector('.input-wrap>input') as HTMLInputElement
@@ -148,6 +152,25 @@ function createDanmuInput() {
       changeBtn(false)
     }
   })
+
+  function changeTop(is: boolean) {
+    if (is) {
+      topBtn.classList.remove('def')
+      topBtn.classList.add('top')
+    } else {
+      topBtn.classList.remove('top')
+      topBtn.classList.add('def')
+    }
+  }
+
+  // 初始化
+  changeTop(await ipcRenderer.invoke(`isAlwaysOnTop:${win_id}`))
+  // 监听置顶
+  topBtn.addEventListener('click', async () => {
+    const is = await ipcRenderer.invoke(`isAlwaysOnTop:${win_id}`)
+    ipcRenderer.invoke(`setAlwaysOnTop:${win_id}`, !is)
+    changeTop(!is)
+  })
 }
 
 /** 清除弹窗 */
@@ -159,6 +182,50 @@ function clearPopover() {
       ;(item as HTMLDivElement).style.display = 'none'
     })
   }, 100)
+}
+
+/** 音量修改 */
+let changeVolumeTimet: NodeJS.Timeout
+function changeVolume() {
+  const html = `
+  <div class="change-volume" style="display: none;">
+    <span class="value">0</span>%
+  </div>
+  `
+  const dom = document.createElement('div')
+  dom.innerHTML = html
+  document.body.appendChild(dom)
+
+  window.addEventListener('wheel', (event) => {
+    if (!window.livePlayer) return
+
+    const volumeValueEl = document.querySelector('.change-volume>.value') as HTMLSpanElement
+    const volumeEl = document.querySelector('.change-volume') as HTMLDivElement
+
+    volumeEl.style.display = 'block'
+    if (changeVolumeTimet) clearTimeout(changeVolumeTimet)
+
+    const info = window.livePlayer.getPlayerInfo()
+    const volume = info.volume.value
+    const volumeStep = 2
+
+    let changeVlaue =
+      event.deltaY > 0 ? Math.max(0, volume - volumeStep) : Math.min(100, volume + volumeStep)
+
+    changeVlaue = Number(changeVlaue.toFixed(0))
+    window.livePlayer.volume(changeVlaue)
+    volumeValueEl.innerText = changeVlaue.toString()
+
+    changeVolumeTimet = setTimeout(() => {
+      volumeEl.style.display = 'none'
+    }, 500)
+  })
+}
+
+/** 添加头像和主播名字 */
+function addFaceAndName() {
+  document.querySelector('.room-owner-username')
+  document.querySelector('.blive-avatar-face')
 }
 
 window.addEventListener('DOMContentLoaded', () => createDanmuInput(), { once: true })
@@ -174,4 +241,5 @@ window.onload = () => {
   document.body.setAttribute('class', `${document.body.getAttribute('class')} hide-aside-area`)
 
   clearPopover()
+  changeVolume()
 }

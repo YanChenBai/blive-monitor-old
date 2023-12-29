@@ -1,5 +1,4 @@
 declare interface Window {
-  win_id: string
   livePlayer?: {
     NAME: string
     VERSION: string
@@ -29,7 +28,12 @@ declare interface Window {
       quality: string
       qualityCandidates: { qn: string; desc: string }[]
       timeShift: number
+      volume: {
+        disabled: boolean
+        value: number
+      }
     }
+
     getVideoEl: () => void
     init: () => void
     injectInitAPIData: () => void
@@ -66,6 +70,6 @@ declare interface Window {
     toast: () => void
     updateDMSetting: () => void
     userFeedback: () => void
-    volume: () => void
+    volume: (value: number) => void
   }
 }
