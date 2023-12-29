@@ -37,10 +37,6 @@ function main() {
     app.whenReady().then(async () => {
       win = await mainWin()
       initAutoUpdater(win)
-
-      globalShortcut.register('CommandOrControl+Shift+i', function () {
-        win?.webContents.openDevTools()
-      })
     })
   } else {
     app.quit()
