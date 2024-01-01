@@ -34,10 +34,10 @@ export default async function () {
     app.quit()
   })
 
-  win.webContents.openDevTools({
-    mode: 'detach',
-    activate: true
-  })
+  // win.webContents.openDevTools({
+  //   mode: 'detach',
+  //   activate: true
+  // })
 
   if (!app.isPackaged) {
     win.webContents.openDevTools({

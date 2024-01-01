@@ -1,6 +1,6 @@
 {
   "name": "blive-monitor",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "b站直播监控工具,dd狂喜",
   "main": "./dist/main.js",
   "type": "commonjs",
@@ -11,7 +11,7 @@
     "dev:render": "cd ./render && pnpm dev",
     "build:render": "cd ./render && pnpm build",
     "dev": "chcp 65001 && electron .",
-    "build:ts": " tsc && node ./buildStep/copyAssets.js",
+    "build:ts": " tsc",
     "build:electron": "pnpm build:ts && electron-builder"
   },
   "keywords": [],
