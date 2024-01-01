@@ -1,7 +1,10 @@
-export interface RoomInfo {
+interface Response {
   code: number
   msg: string
   message: string
+}
+
+export interface RoomInfo extends Response {
   data: {
     uid: number
     room_id: number
@@ -31,10 +34,7 @@ export interface RoomInfo {
   }
 }
 
-export interface UserInfo {
-  code: number
-  msg: string
-  message: string
+export interface UserInfo extends Response {
   data: {
     info: {
       uid: number
@@ -55,6 +55,35 @@ export interface UserInfo {
       ctime_text: string
     }
   }
+}
+
+export interface ManyUserInfoItem {
+  title: string
+  room_id: number
+  uid: number
+  online: number
+  live_time: number
+  live_status: number
+  short_id: number
+  area: number
+  area_name: string
+  area_v2_id: number
+  area_v2_name: string
+  area_v2_parent_name: string
+  area_v2_parent_id: number
+  uname: string
+  face: string
+  tag_name: string
+  tags: string
+  cover_from_user: string
+  keyframe: string
+  lock_till: string
+  hidden_till: string
+  broadcast_type: number
+}
+
+export interface ManyUserInfo extends Response {
+  data: Record<string, ManyUserInfoItem>
 }
 
 export interface OpenRoom {

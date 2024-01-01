@@ -3,7 +3,7 @@ import path from 'path'
 import liveWin from '../live'
 import biliWin from '../bili'
 import type { OpenRoom } from '../../types/bili'
-import { getInfo } from '../../utils/getRoomInfo'
+import { getInfo, getManyInfo } from '../../utils/getRoomInfo'
 
 export default async function () {
   const win = new BrowserWindow({
@@ -34,6 +34,11 @@ export default async function () {
     app.quit()
   })
 
+  win.webContents.openDevTools({
+    mode: 'detach',
+    activate: true
+  })
+
   if (!app.isPackaged) {
     win.webContents.openDevTools({
       mode: 'detach',
@@ -54,6 +59,9 @@ export default async function () {
 
   // 获取直播间信息
   ipcMain.handle('main:getRoomInfo', async (_e, room_id: string) => await getInfo(room_id))
+
+  // 批量获取直播间信息
+  ipcMain.handle('main:getManyRoomInfo', async (_e, uids: string[]) => await getManyInfo(uids))
 
   // 打开直播
   ipcMain.on('main:openLive', (_event, options: OpenRoom) => {

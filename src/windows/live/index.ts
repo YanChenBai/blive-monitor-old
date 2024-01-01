@@ -4,6 +4,7 @@ import fs from 'fs'
 import type { OpenRoom } from '../../types/bili'
 import axios from 'axios'
 import { logger } from '../../utils/logger'
+import css from './assets/css'
 
 const iconDirPath = app.isPackaged
   ? path.resolve(process.resourcesPath + '\\icons')
@@ -50,7 +51,7 @@ export default async function (options: OpenRoom) {
     icon,
     backgroundColor: '#101014',
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       webviewTag: true,
       contextIsolation: false,
       preload: path.join(__dirname, './preload.js')
@@ -67,7 +68,6 @@ export default async function (options: OpenRoom) {
   const win_id = win.id
 
   // 注入css
-  const css = fs.readFileSync(path.resolve(__dirname, 'index.css')).toString()
   win.webContents.insertCSS(css)
 
   win.loadURL(`https://live.bilibili.com/blanc/${options.room_id}?win_id=${win_id}`)
@@ -78,10 +78,16 @@ export default async function (options: OpenRoom) {
   // 最小化窗口
   ipcMain.on(`min:${win_id}`, () => win.minimize())
 
+  // 获取房间数据
+  ipcMain.handle(`getRoomData:${win_id}`, () => options)
+
   // 获取置顶状态
   ipcMain.handle(`isAlwaysOnTop:${win_id}`, () => win.isAlwaysOnTop())
+
   // 设置窗口置顶状态
-  ipcMain.handle(`setAlwaysOnTop:${win_id}`, (_event, is: boolean) => win.setAlwaysOnTop(is))
+  ipcMain.handle(`setAlwaysOnTop:${win_id}`, (_event, is: boolean) => {
+    win.setAlwaysOnTop(is)
+  })
 
   win.addListener('ready-to-show', () => win.focus())
   Menu.setApplicationMenu(null)
