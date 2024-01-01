@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 contextBridge.exposeInMainWorld('blive', {
   winCount: () => ipcRenderer.invoke('main:winCount'),
   getRoomInfo: (room_id: string) => ipcRenderer.invoke('main:getRoomInfo', room_id),
+  getManyRoomInfo: (uids: string[]) => ipcRenderer.invoke('main:getManyRoomInfo', uids),
   /** 获取版本 */
   getVersion: () => ipcRenderer.invoke('update:version'),
   /** 检查更新 */

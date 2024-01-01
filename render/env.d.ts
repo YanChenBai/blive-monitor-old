@@ -7,6 +7,31 @@ declare module 'vue-router' {
   interface RouteMeta {}
 }
 
+interface ManyUserInfoItem {
+  title: string
+  room_id: number
+  uid: number
+  online: number
+  live_time: number
+  live_status: number
+  short_id: number
+  area: number
+  area_name: string
+  area_v2_id: number
+  area_v2_name: string
+  area_v2_parent_name: string
+  area_v2_parent_id: number
+  uname: string
+  face: string
+  tag_name: string
+  tags: string
+  cover_from_user: string
+  keyframe: string
+  lock_till: string
+  hidden_till: string
+  broadcast_type: number
+}
+
 declare global {
   interface Window {
     blive: {
@@ -30,6 +55,12 @@ declare global {
        * @returns
        */
       getRoomInfo: (room_id: string) => Promise<Room>
+      /**
+       * 获取批量的直播间信息
+       * @param uids 用户id数组
+       * @returns
+       */
+      getManyRoomInfo: (uids: string[]) => Promise<Record<string, ManyUserInfoItem>>
       /** ipc通讯 */
       ipcRenderer: {
         /** 发送 */

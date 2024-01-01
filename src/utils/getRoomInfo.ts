@@ -1,4 +1,6 @@
-import { RoomInfo, UserInfo } from '../types/bili'
+import axios from 'axios'
+import { RoomInfo, UserInfo, ManyUserInfo } from '../types/bili'
+import { chunk } from 'lodash'
 
 /**
  * 获取直播间信息
@@ -42,4 +44,29 @@ export async function getInfo(room_id: string) {
         return Promise.reject(res)
       }
     })
+}
+
+export async function getManyInfo(uids: string[]) {
+  const chunks = chunk(uids, 20)
+  return Promise.all(
+    chunks.map((item) =>
+      axios
+        .get<ManyUserInfo>('https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids', {
+          params: {
+            uids: item
+          }
+        })
+        .then((res) => {
+          if (res.data.code === 0) {
+            return res.data.data
+          } else {
+            return Promise.reject(res)
+          }
+        })
+    )
+  ).then((res) =>
+    res.reduce((acc, cur) => {
+      return { ...acc, ...cur }
+    }, {})
+  )
 }

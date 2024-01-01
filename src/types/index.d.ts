@@ -34,7 +34,7 @@ declare interface Window {
       }
     }
 
-    getVideoEl: () => void
+    getVideoEl: () => HTMLVideoElement
     init: () => void
     injectInitAPIData: () => void
     loadVideo: () => void
