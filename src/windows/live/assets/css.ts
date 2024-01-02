@@ -209,6 +209,7 @@ export default css`
     font-size: 20px;
     border-radius: 6px;
     user-select: none;
+    color: #fff;
   }
 
   .user-info {
@@ -224,6 +225,7 @@ export default css`
     transition: all 0.3s;
     transform: translateX(calc(100% + 10px));
     flex-direction: row-reverse;
+    color: #fff;
   }
 
   body:hover .user-info {
