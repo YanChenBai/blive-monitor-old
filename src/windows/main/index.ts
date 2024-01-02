@@ -19,7 +19,8 @@ export default async function () {
       contextIsolation: true,
       nodeIntegration: true,
       preload: path.join(__dirname, '../preload.js'),
-      webviewTag: true
+      webviewTag: true,
+      spellcheck: false
     }
   })
 

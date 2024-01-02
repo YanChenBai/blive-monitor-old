@@ -9,7 +9,7 @@ function checkIconsDir() {
   // 检查icons文件夹
   const iconDirPath = app.isPackaged
     ? path.resolve(process.resourcesPath + '\\icons')
-    : path.resolve(__dirname, '../../../icon')
+    : path.resolve(__dirname, '../resources/icons')
   isExists(iconDirPath)
 }
 

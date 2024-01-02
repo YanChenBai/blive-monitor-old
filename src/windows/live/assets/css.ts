@@ -222,7 +222,7 @@ export default css`
     padding: 6px;
     border-radius: 50px;
     transition: all 0.3s;
-    transform: translateX(calc(100% + 6px));
+    transform: translateX(calc(100% + 10px));
     flex-direction: row-reverse;
   }
 

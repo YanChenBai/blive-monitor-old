@@ -5,17 +5,20 @@ import type { OpenRoom } from '../../types/bili'
 import axios from 'axios'
 import { logger } from '../../utils/logger'
 import css from './assets/css'
+import crypto from 'crypto'
 
 const iconDirPath = app.isPackaged
   ? path.resolve(process.resourcesPath + '\\icons')
-  : path.resolve(__dirname, '../../../icon')
+  : path.resolve(__dirname, '../../../resources/icons')
 
+const md5 = (str: string) => crypto.createHash('md5').update(str).digest('hex')
 /**
- * 查看有没有图标
- * @param room_id 房间id
+ * 查看图片是否缓存
+ * @param url 图片地址
  */
-function isHaveIcon(room_id: string) {
-  if (fs.existsSync(path.join(iconDirPath, `${room_id}.png`))) {
+function isCached(url: string) {
+  const imgPath = path.join(iconDirPath, `${md5(url)}.png`)
+  if (fs.existsSync(imgPath)) {
     return true
   } else {
     return false
@@ -23,23 +26,32 @@ function isHaveIcon(room_id: string) {
 }
 
 /**
- * 保存头像
- * @param room_id 房间id
- * @param url 头像地址
+ * 保存图片
+ * @param url 图片地址
  */
-async function saveFace(room_id: string, url: string) {
+async function saveImg(url: string, savePath: string) {
   try {
     const response = await axios.get(url, { responseType: 'arraybuffer' })
-    fs.writeFileSync(path.resolve(iconDirPath, room_id + '.png'), response.data)
+    fs.writeFileSync(savePath, response.data)
+    return true
   } catch (error) {
     logger.error(error)
+    return false
+  }
+}
+
+async function getFace(url: string) {
+  const imgPath = path.join(iconDirPath, `${md5(url)}.png`)
+  const status = isCached(url)
+  if (status) {
+    return imgPath
+  } else {
+    return (await saveImg(url, imgPath)) ? imgPath : ''
   }
 }
 
 export default async function (options: OpenRoom) {
-  // 看看要不要保存图标
-  if (!isHaveIcon(options.room_id)) await saveFace(options.room_id, options.face)
-  const icon = path.resolve(iconDirPath, options.room_id + '.png')
+  const icon = await getFace(options.face)
 
   // 创建窗口
   const win = new BrowserWindow({
@@ -49,6 +61,7 @@ export default async function (options: OpenRoom) {
     frame: false,
     show: true,
     icon,
+    title: options.name,
     backgroundColor: '#101014',
     webPreferences: {
       nodeIntegration: true,
