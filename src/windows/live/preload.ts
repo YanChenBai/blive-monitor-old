@@ -2,6 +2,10 @@ import { createControlBar } from './assets/controlBar'
 import { createChangeVolume } from './assets/changeVolume'
 import { createUaerInfo } from './assets/userInfo'
 import { awaitLivePlayer, awaitVideoEl } from './assets/livePlayer'
+import { clearPlayerLog } from './assets/clearPlayerLog'
+
+// 清除日志显示的持久化
+clearPlayerLog()
 
 window.onload = () => {
   // 等待livePlayer对象挂载
