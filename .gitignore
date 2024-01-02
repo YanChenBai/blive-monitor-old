@@ -34,3 +34,4 @@ env.ts
 updatePath
 icon
 resources
+vite.config.ts.timestamp-*.mjs

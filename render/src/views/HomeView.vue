@@ -165,13 +165,23 @@ async function init() {
   }
 }
 
+const livePreRegex = /^live /
 // 搜索
 const searchList = computed(() => {
   if (keyword.value.length <= 0) return rooms.value
   else {
-    return rooms.value.filter((item) => {
-      const val = keyword.value.toLowerCase()
+    let val = keyword.value.toLowerCase()
+    let searchRooms: Room[] = rooms.value
+    // 如果是live开头的
+    if (val.startsWith('live')) {
+      // 先过滤掉为开播的
+      searchRooms = searchRooms.filter((item) => item.live_status === 1)
+      // 如果关键字就是live就直接返回
+      if (val === 'live') return searchRooms
+      val = val.replace(livePreRegex, '')
+    }
 
+    return searchRooms.filter((item) => {
       // 修改了数据结构兼容
       const room = Object.assign(
         {
