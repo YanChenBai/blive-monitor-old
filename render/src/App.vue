@@ -1,6 +1,8 @@
 <template>
   <n-config-provider
     abstract
+    :locale="zhCN"
+    :date-locale="dateZhCN"
     :theme="darkTheme"
     :theme-overrides="{
       common: {
@@ -31,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { darkTheme } from 'naive-ui'
+import { darkTheme, zhCN, dateZhCN } from 'naive-ui'
 import { RouterView } from 'vue-router'
 import WinMenu from './components/WinMenu.vue'
 import { closeEvents, minEvents } from '@/utils/events'
