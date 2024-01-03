@@ -37,8 +37,6 @@ window.onload = async () => {
     createEmojiPopover(inputWrap, room.room_id)
   })
 
-  // 随机触发鼠标移动事件
-  setInterval(() => {
-    randomMouseMove()
-  }, 200)
+  // 5分钟随机触发鼠标移动事件
+  setInterval(() => randomMouseMove(), 1000 * 60 * 5)
 }
