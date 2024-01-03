@@ -12,6 +12,7 @@ autoUpdater.autoDownload = true
 
 let isDownloaded = false
 let isUpdateAvailable = false
+let isError = false
 
 // 新建通知
 function newNotification(title: string, body: string) {
@@ -72,8 +73,11 @@ export async function initAutoUpdater(win: BrowserWindow) {
 
   // 更新错误重试
   autoUpdater.addListener('error', () => {
-    newNotification(`😵 更新错误`, '点击重试').show()
-    win.webContents.send('update:error', false)
+    if (!isError) {
+      isError = true
+      newNotification(`😵 更新错误`, '点击重试').show()
+      win.webContents.send('update:error', false)
+    }
   })
 
   // 获取当前版本
