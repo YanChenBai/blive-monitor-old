@@ -88,8 +88,8 @@ function getHeaders(data: Emoticons[]) {
   return dom
 }
 
-function tabContentClickHandler(data: Emoticon) {
-  if (data.is_dynamic === 1) {
+function tabContentClickHandler(data: Emoticon, pkg_type: number) {
+  if (pkg_type !== 3) {
     if (data.perm === 1) sendEmoji(data)
   } else {
     const inputDom = document.querySelector('.input-wrap>input') as HTMLInputElement
@@ -131,7 +131,8 @@ function createEmojiTab(data: Emoticons) {
     const isHistory = target.getAttribute('data-is-history')
     if (index) {
       tabContentClickHandler(
-        isHistory ? data.recently_used_emoticons[Number(index)] : data.emoticons[Number(index)]
+        isHistory ? data.recently_used_emoticons[Number(index)] : data.emoticons[Number(index)],
+        data.pkg_type
       )
     }
   })

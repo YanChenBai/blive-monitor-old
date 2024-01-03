@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import { BrowserWindow, app, globalShortcut } from 'electron'
+import { BrowserWindow, app } from 'electron'
 import mainWin from './windows/main'
 import path from 'path'
 import { isExists } from './utils/isExists'
