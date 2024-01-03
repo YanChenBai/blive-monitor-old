@@ -85,7 +85,7 @@ export default css`
   }
 
   .control-bar {
-    position: absolute;
+    position: fixed;
     z-index: 9999999;
     right: 20px;
     top: 50vh;
@@ -157,19 +157,20 @@ export default css`
 
   /* 输入框 */
   .input-wrap {
-    width: 0px;
+    width: 280px;
     display: flex;
-    position: absolute;
+    position: fixed;
     z-index: 9999;
-    right: 66px;
     top: 50vh;
-    transform: translateY(-50%);
+    right: 66px;
+    transform: translate(calc(100% + 66px), -50%);
     overflow: hidden;
     transition: all 0.2s;
+    flex-wrap: wrap;
   }
 
   .input-wrap.open {
-    width: 280px;
+    transform: translate(0, -50%);
   }
 
   .input-wrap input {
@@ -228,7 +229,7 @@ export default css`
     color: #fff;
   }
 
-  body:hover .user-info {
+  .user-info.open {
     transform: translateX(0);
   }
   .user-info .face img {
@@ -244,5 +245,90 @@ export default css`
     font-size: 16px;
     font-weight: 600;
     padding: 0 6px;
+  }
+
+  .emoji-popover {
+    height: 130px;
+    background-color: #fff;
+    border: 2px #f288a6ff solid;
+    padding: 4px;
+    overflow: hidden;
+    border-radius: 10px;
+    margin-top: 4px;
+  }
+  .emoji-popover img {
+    width: 100%;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .emoji-header {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    border-bottom: 2px #8b848438 solid;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+  }
+  .emoji-header-item {
+    width: 30px;
+    height: 30px;
+    padding: 2px;
+    box-sizing: border-box;
+  }
+
+  .emoji-content {
+    padding-top: 4px;
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(130px - 30px - 10px);
+    overflow-y: scroll;
+  }
+
+  .emoji-content::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .emoji-content::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+  }
+
+  .emoji-content::-webkit-scrollbar-thumb {
+    background-color: #555;
+  }
+
+  .emoji-content::-webkit-scrollbar-thumb:hover {
+    background-color: #222;
+  }
+
+  .emoji-tab {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .emoji-tab.hide {
+    display: none;
+  }
+  .emoji-tab-item-title {
+    width: 100%;
+    color: #222;
+  }
+  .emoji-tab-item {
+    padding: 4px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .emoji-tab-item.not {
+    opacity: 0.4;
+  }
+  .emoji-tab-item img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
   }
 `

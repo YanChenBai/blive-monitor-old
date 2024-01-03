@@ -2,16 +2,22 @@ import { html } from 'proper-tags'
 import { ipcRenderer } from 'electron'
 import { win_id } from './getWinId'
 import { OpenRoom } from '../../../types/bili'
-import { createDom } from './tools'
+import { createDom, ref } from './tools'
 
-export async function createUaerInfo() {
-  const { name, face } = (await ipcRenderer.invoke(`getRoomData:${win_id}`)) as OpenRoom
+export function createUaerInfo(room: OpenRoom) {
   createDom(html`
-    <div class="user-info">
+    <div class="user-info" blive-monitor>
       <div class="face">
-        <img src="${face}" />
+        <img src="${room.face}" />
       </div>
-      <div class="name">${name}</div>
+      <div class="name">${room.name}</div>
     </div>
   `)
+
+  const userInfo = document.querySelector('.user-info[blive-monitor]') as HTMLDivElement
+  const userInfoIsOpen = ref(false, (value) => {
+    userInfo.classList.toggle('open', value)
+  })
+
+  return { userInfoIsOpen }
 }

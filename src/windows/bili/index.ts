@@ -1,4 +1,4 @@
-import { BrowserWindow, Menu, app } from 'electron'
+import { BrowserWindow, Menu, app, ipcMain } from 'electron'
 import path from 'path'
 
 export default async function () {

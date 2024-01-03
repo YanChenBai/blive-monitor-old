@@ -25,10 +25,12 @@ export function createChangeVolume(volumeStep = 2) {
   window.addEventListener('wheel', (event) => {
     if (!window.livePlayer) return
 
+    const info = window.livePlayer.getPlayerInfo()
+    if (!info.volume) return
+
     volumeStatus.value = true
     if (changeVolumeTimet) clearTimeout(changeVolumeTimet)
 
-    const info = window.livePlayer.getPlayerInfo()
     const volume = info.volume.value
 
     // 看看是不是被静音

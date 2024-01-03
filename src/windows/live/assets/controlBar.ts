@@ -1,5 +1,5 @@
 import { html } from 'proper-tags'
-import { createDom, ref } from './tools'
+import { Ref, createDom, ref } from './tools'
 import { ipcRenderer } from 'electron'
 import { win_id } from './getWinId'
 import { OpenRoom } from '../../../types/bili'
@@ -46,8 +46,8 @@ const getBtn = (item: Btn) =>
 
 // 模板
 const template = html`
-  <div class="control-bar close">${btns.map((item) => getBtn(item))}</div>
-  <div class="input-wrap close">
+  <div class="control-bar">${btns.map((item) => getBtn(item))}</div>
+  <div class="input-wrap">
     <input type="text" placeholder="发个弹幕呗~" maxlength="20" />
     <div class="length"><span class="value">0</span>/<span class="maxlength">20</span></div>
   </div>
@@ -113,10 +113,8 @@ const getIstop = (room_id: string) => window.localStorage.getItem(`isTop:${room_
 const addIstop = (room_id: string) => window.localStorage.setItem(`isTop:${room_id}`, 'o')
 const removeIstop = (room_id: string) => window.localStorage.removeItem(`isTop:${room_id}`)
 
-ipcRenderer.invoke(`setAlwaysOnTop:${win_id}`, getIstop('732') ? true : false)
 /** 置顶 */
-async function topBtn() {
-  const { room_id } = (await ipcRenderer.invoke(`getRoomData:${win_id}`)) as OpenRoom
+async function topBtn(room_id: string) {
   const topBtn = document.querySelector('.top-win>button') as HTMLButtonElement
   const isTopStorage = getIstop(room_id)
   const isTop = ref(
@@ -129,18 +127,13 @@ async function topBtn() {
     true
   )
 
-  // 初始化
-  isTop.value = await ipcRenderer.invoke(`isAlwaysOnTop:${win_id}`)
-
   // 监听置顶
   topBtn.addEventListener('click', async () => {
-    const is = await ipcRenderer.invoke(`isAlwaysOnTop:${win_id}`)
-    ipcRenderer.invoke(`setAlwaysOnTop:${win_id}`, !is)
-    isTop.value = !is
+    isTop.value = !isTop.value
   })
 }
 
-function danmuInput(controlBarIsOpen: { value: boolean }) {
+function danmuInput(controlBarIsOpen: Ref<boolean>, userInfoIsOpen: Ref<boolean>) {
   const inputWrap = document.querySelector('.input-wrap') as HTMLDivElement
   const inputDom = document.querySelector('.input-wrap>input') as HTMLInputElement
   const inputMaxLength = document.querySelector('.input-wrap>.length>.maxlength') as HTMLSpanElement
@@ -188,6 +181,7 @@ function danmuInput(controlBarIsOpen: { value: boolean }) {
         inputIsOpen.value = false
       } else {
         controlBarIsOpen.value = true
+        userInfoIsOpen.value = true
         inputIsOpen.value = true
         inputDom.focus()
       }
@@ -196,11 +190,17 @@ function danmuInput(controlBarIsOpen: { value: boolean }) {
     if (e.key === 'Escape') {
       inputIsOpen.value = false
       controlBarIsOpen.value = false
+      userInfoIsOpen.value = false
     }
   })
+
+  return {
+    inputWrap,
+    inputDom
+  }
 }
 
-function controlBar() {
+function controlBar(userInfoIsOpen: Ref<boolean>) {
   const controlBar = document.querySelector('.control-bar') as HTMLDivElement
 
   const controlBarIsOpen = ref(false, (value) => controlBar.classList.toggle('open', value))
@@ -208,9 +208,11 @@ function controlBar() {
   // 监听鼠标进入窗口和离开窗口事件
   document.addEventListener('mousemove', () => {
     controlBarIsOpen.value = true
+    userInfoIsOpen.value = true
   })
   document.addEventListener('mouseleave', () => {
     controlBarIsOpen.value = false
+    userInfoIsOpen.value = false
   })
 
   return {
@@ -218,12 +220,15 @@ function controlBar() {
   }
 }
 
-export async function createControlBar() {
+export async function createControlBar(room: OpenRoom, userInfoIsOpen: Ref<boolean>) {
   createDom(template)
-
-  topBtn()
-  const { controlBarIsOpen } = controlBar()
-  danmuInput(controlBarIsOpen)
+  topBtn(room.room_id)
+  const { controlBarIsOpen } = controlBar(userInfoIsOpen)
+  const { inputWrap } = danmuInput(controlBarIsOpen, userInfoIsOpen)
   closeBtn()
   minBtn()
+
+  return {
+    inputWrap
+  }
 }

@@ -1,21 +1,35 @@
-export function awaitThing(func: () => boolean) {
-  return new Promise<void>((res) => {
-    const timer = setInterval(() => {
-      if (func()) {
+function isNotEmpty<T>(data: T | undefined | null) {
+  if (data !== null && data !== undefined) {
+    return data
+  } else {
+    return null
+  }
+}
+
+export function awaitThing<T>(func: () => T | undefined | null) {
+  return new Promise<T>((res, rej) => {
+    const data = isNotEmpty(func())
+    if (data) {
+      res(data)
+    } else {
+      const timer = setInterval(() => {
+        const data = isNotEmpty(func())
+        if (data) {
+          clearInterval(timer)
+          res(data)
+        }
+      }, 100)
+
+      setTimeout(() => {
         clearInterval(timer)
-        res()
-      }
-    }, 50)
+        rej(new Error('awaitThing timeout'))
+      }, 10000)
+    }
   })
 }
 
 /** 等待livePlayer */
-export const awaitLivePlayer = () =>
-  awaitThing(() => window.livePlayer !== null && window.livePlayer !== undefined)
+export const awaitLivePlayer = () => awaitThing(() => window.livePlayer)
 
 export const awaitVideoEl = () =>
-  awaitThing(() =>
-    window.livePlayer
-      ? window.livePlayer.getVideoEl() !== null && window.livePlayer.getVideoEl() !== undefined
-      : false
-  )
+  awaitThing(() => (window.livePlayer ? window.livePlayer.getVideoEl() : null))

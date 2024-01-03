@@ -1,10 +1,14 @@
+export interface Ref<T> {
+  value: T
+}
+
 /**
  * 响应式变量
  * @param targetElement
  * @param value
  * @returns
  */
-export function ref<T>(value: T, func: (newValue: T) => void, immediately = false) {
+export function ref<T>(value: T, func: (newValue: T) => void, immediately = false): Ref<T> {
   if (immediately === true) func(value)
   return new Proxy(
     { value },
@@ -26,10 +30,12 @@ export function ref<T>(value: T, func: (newValue: T) => void, immediately = fals
  * @param wrapper 容器
  */
 export function createDom(template: string, wrapper?: HTMLElement) {
-  if (wrapper) wrapper.innerHTML = template
-  else {
+  if (wrapper) {
+    wrapper.innerHTML = template
+    return wrapper
+  } else {
     wrapper = document.createElement('div')
     wrapper.innerHTML = template
-    document.body.appendChild(wrapper)
+    return document.body.appendChild(wrapper)
   }
 }

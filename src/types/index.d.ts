@@ -50,7 +50,30 @@ declare interface Window {
     remainBufferLength: () => void
     /** 重置弹幕容器大小  */
     resize: () => void
-    sendDanmaku: () => void
+    sendDanmaku: (options: {
+      msg: string
+      mode?: number
+      bubble?: number
+      dm_type?: number
+      emoticonOptions?: {
+        bulgeDisplay: number
+        emoji: string
+        emoticonUnique: string
+        height: number
+        inPlayerArea: number
+        isDynamic: number
+        url: string
+        width: number
+      }
+    }) => Promise<{
+      code: number
+      data: {
+        mode_info: { mode: number; show_player_type: number; extra: string }
+        dm_v2: object
+      }
+      message: string
+      msg: string
+    }>
     sendGift: () => void
     set: () => void
     setBottomBar: () => void
