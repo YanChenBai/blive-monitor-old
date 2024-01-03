@@ -2,13 +2,20 @@ import { BrowserWindow, app, Notification, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { logger } from './logger'
 import path from 'path'
+import { isNewVresion } from './isNewVresion'
 
 // 配置自动更新
 if (!app.isPackaged) {
+  Object.defineProperty(app, 'isPackaged', {
+    get() {
+      return true
+    }
+  })
   autoUpdater.updateConfigPath = path.join(__dirname, '../../dev-app-update.yml')
 }
 autoUpdater.logger = logger
 autoUpdater.autoDownload = true
+logger.info(autoUpdater.getFeedURL())
 
 let isDownloaded = false
 let isUpdateAvailable = false
@@ -26,6 +33,7 @@ function newNotification(title: string, body: string) {
   })
 }
 
+// 发送打开更新的事件
 function renderOpenUpdate(win: BrowserWindow) {
   if (win.isMinimized()) win.show()
   win.webContents.send('update:openUpdate', true)
@@ -86,8 +94,9 @@ export async function initAutoUpdater(win: BrowserWindow) {
   // 获取可更新
   ipcMain.handle('update:check', async () => {
     const res = await autoUpdater.checkForUpdates()
+
     if (res) {
-      if (res.updateInfo.version === autoUpdater.currentVersion.version) {
+      if (!isNewVresion(autoUpdater.currentVersion.version, res.updateInfo.version)) {
         return null
       } else {
         return res.updateInfo

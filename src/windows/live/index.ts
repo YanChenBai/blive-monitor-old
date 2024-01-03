@@ -71,6 +71,11 @@ export default async function (options: OpenRoom) {
     }
   })
 
+  win.webContents.openDevTools({
+    mode: 'detach',
+    activate: true
+  })
+
   if (!app.isPackaged) {
     win.webContents.openDevTools({
       mode: 'detach',

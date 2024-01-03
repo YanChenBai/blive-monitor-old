@@ -206,7 +206,8 @@ function controlBar(userInfoIsOpen: Ref<boolean>) {
   const controlBarIsOpen = ref(false, (value) => controlBar.classList.toggle('open', value))
 
   // 监听鼠标进入窗口和离开窗口事件
-  document.addEventListener('mousemove', () => {
+  document.addEventListener('mousemove', (event: MouseEvent & { ignore?: boolean }) => {
+    if (event.ignore) return
     controlBarIsOpen.value = true
     userInfoIsOpen.value = true
   })

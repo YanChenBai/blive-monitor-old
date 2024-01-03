@@ -7,6 +7,7 @@ import { createEmojiPopover } from './assets/emotIcons'
 import { win_id } from './assets/getWinId'
 import { OpenRoom } from '../../types/bili'
 import { ipcRenderer } from 'electron'
+import { randomMouseMove } from './assets/randomMouseMove'
 
 // 清除日志显示的持久化
 clearPlayerLog()
@@ -35,4 +36,9 @@ window.onload = async () => {
   createControlBar(room, userInfoIsOpen).then(({ inputWrap }) => {
     createEmojiPopover(inputWrap, room.room_id)
   })
+
+  // 随机触发鼠标移动事件
+  setInterval(() => {
+    randomMouseMove()
+  }, 200)
 }
