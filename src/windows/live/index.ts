@@ -6,10 +6,7 @@ import axios from 'axios'
 import { logger } from '../../utils/logger'
 import css from './assets/css'
 import crypto from 'crypto'
-
-const iconDirPath = app.isPackaged
-  ? path.resolve(process.resourcesPath + '\\icons')
-  : path.resolve(__dirname, '../../../resources/icons')
+import { iconsPath } from '../../utils/paths'
 
 const md5 = (str: string) => crypto.createHash('md5').update(str).digest('hex')
 /**
@@ -17,7 +14,7 @@ const md5 = (str: string) => crypto.createHash('md5').update(str).digest('hex')
  * @param url 图片地址
  */
 function isCached(url: string) {
-  const imgPath = path.join(iconDirPath, `${md5(url)}.png`)
+  const imgPath = path.join(iconsPath, `${md5(url)}.png`)
   if (fs.existsSync(imgPath)) {
     return true
   } else {
@@ -41,7 +38,7 @@ async function saveImg(url: string, savePath: string) {
 }
 
 async function getFace(url: string) {
-  const imgPath = path.join(iconDirPath, `${md5(url)}.png`)
+  const imgPath = path.join(iconsPath, `${md5(url)}.png`)
   const status = isCached(url)
   if (status) {
     return imgPath

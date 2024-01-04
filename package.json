@@ -1,6 +1,6 @@
 {
   "name": "blive-monitor",
-  "version": "0.0.5",
+  "version": "0.0.10",
   "description": "b站直播监控工具,dd狂喜",
   "main": "./dist/main.js",
   "type": "commonjs",
@@ -12,7 +12,8 @@
     "build:render": "cd ./render && pnpm build",
     "dev": "chcp 65001 && electron .",
     "build:ts": " tsc",
-    "build:electron": "pnpm build:ts && electron-builder"
+    "build:electron": "pnpm build:ts && electron-builder",
+    "kill": "taskkill /f /t /im blive-monitor.exe"
   },
   "keywords": [],
   "author": "",

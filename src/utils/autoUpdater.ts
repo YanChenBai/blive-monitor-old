@@ -3,6 +3,7 @@ import { autoUpdater } from 'electron-updater'
 import { logger } from './logger'
 import path from 'path'
 import { isNewVresion } from './isNewVresion'
+import { msgIconPath } from './paths'
 
 // 配置自动更新
 if (!app.isPackaged) {
@@ -21,14 +22,11 @@ let isUpdateAvailable = false
 let isError = false
 
 // 新建通知
-function newNotification(title: string, body: string) {
-  const icon = app.isPackaged
-    ? path.resolve(process.resourcesPath + '\\blivemonitor.ico')
-    : path.join(__dirname, '../../blivemonitor.ico')
+export function newNotification(title: string, body: string) {
   return new Notification({
     title,
     body,
-    icon
+    icon: msgIconPath
   })
 }
 

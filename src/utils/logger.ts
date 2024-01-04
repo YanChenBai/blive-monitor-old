@@ -1,17 +1,14 @@
 import { app } from 'electron'
 import log4js from 'log4js'
 import path from 'path'
-
-const dir = app.isPackaged
-  ? path.resolve(process.resourcesPath + '\\logs\\info.log')
-  : 'logs/info.log'
+import { logPath } from './paths'
 
 log4js.configure({
   appenders: {
     console: { type: 'console' },
     file: {
       type: 'dateFile',
-      filename: dir,
+      filename: logPath,
       maxLogSize: 10485760,
       encoding: 'utf-8',
       backups: 3,
