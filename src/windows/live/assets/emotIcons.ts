@@ -88,9 +88,14 @@ function getHeaders(data: Emoticons[]) {
   return dom
 }
 
-function tabContentClickHandler(data: Emoticon, pkg_type: number) {
+let sendEmojiLock = false
+async function tabContentClickHandler(data: Emoticon, pkg_type: number) {
   if (pkg_type !== 3) {
-    if (data.perm === 1) sendEmoji(data)
+    if (data.perm === 1 && !sendEmojiLock) {
+      sendEmojiLock = true
+      await sendEmoji(data)
+      setTimeout(() => (sendEmojiLock = false), 5000)
+    }
   } else {
     const inputDom = document.querySelector('.input-wrap>input') as HTMLInputElement
     /** 创建一个输入事件 */

@@ -4,7 +4,7 @@ import liveWin from '../live'
 import biliWin from '../bili'
 import type { OpenRoom } from '../../types/bili'
 import { getInfo, getManyInfo } from '../../utils/getRoomInfo'
-import { renderPath } from '../../utils/paths'
+import { RENDER_PATH } from '../../utils/paths'
 
 export default async function () {
   const win = new BrowserWindow({
@@ -25,7 +25,7 @@ export default async function () {
     }
   })
 
-  win.loadURL(renderPath)
+  win.loadURL(RENDER_PATH)
 
   // 关闭主窗口退出整个应用
   win.on('close', () => {

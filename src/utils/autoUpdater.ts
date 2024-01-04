@@ -3,7 +3,7 @@ import { autoUpdater } from 'electron-updater'
 import { logger } from './logger'
 import path from 'path'
 import { isNewVresion } from './isNewVresion'
-import { msgIconPath } from './paths'
+import { MSG_ICON_PATH } from './paths'
 
 // 配置自动更新
 if (!app.isPackaged) {
@@ -26,7 +26,7 @@ export function newNotification(title: string, body: string) {
   return new Notification({
     title,
     body,
-    icon: msgIconPath
+    icon: MSG_ICON_PATH
   })
 }
 

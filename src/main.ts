@@ -1,9 +1,8 @@
 import 'dotenv/config'
 import { BrowserWindow, app } from 'electron'
 import mainWin from './windows/main'
-import { isExists } from './utils/isExists'
 import { initAutoUpdater } from './utils/autoUpdater'
-import { iconsPath } from './utils/paths'
+import { initPath } from './utils/paths'
 
 let win: BrowserWindow | undefined
 function main() {
@@ -16,7 +15,7 @@ function main() {
   const gotTheLock = app.requestSingleInstanceLock()
   if (gotTheLock) {
     // 一些初始化的东西
-    isExists(iconsPath)
+    initPath()
 
     // 当运行第二个实例时，将焦点聚焦到主窗口
     app.on('second-instance', () => {

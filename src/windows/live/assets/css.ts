@@ -160,7 +160,7 @@ export default css`
     width: 280px;
     display: flex;
     position: fixed;
-    z-index: 9999;
+    z-index: 9999999;
     top: 50vh;
     right: 66px;
     transform: translate(calc(100% + 66px), -50%);
