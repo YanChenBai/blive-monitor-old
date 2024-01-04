@@ -10,6 +10,7 @@ type Btn = {
   class: string
 }
 
+const inputIsFocus = ref(false)
 const btns: Btn[] = [
   {
     name: 'close-win',
@@ -151,6 +152,7 @@ function danmuInput(controlBarIsOpen: Ref<boolean>, userInfoIsOpen: Ref<boolean>
 
   const inputIsOpen = ref(false, (value) => {
     inputWrap.classList.toggle('open', value)
+    if (!value) inputDom.blur()
   })
 
   // 修改可输入的最大长度
@@ -161,6 +163,14 @@ function danmuInput(controlBarIsOpen: Ref<boolean>, userInfoIsOpen: Ref<boolean>
   // 监听输入
   inputDom.addEventListener('input', () => {
     inputLength.value = inputDom.value.length
+  })
+
+  // 监听焦点变化
+  inputDom.addEventListener('focus', () => {
+    inputIsFocus.value = true
+  })
+  inputDom.addEventListener('blur', () => {
+    inputIsFocus.value = false
   })
 
   // 监听按钮
@@ -202,7 +212,6 @@ function danmuInput(controlBarIsOpen: Ref<boolean>, userInfoIsOpen: Ref<boolean>
 
 function controlBar(userInfoIsOpen: Ref<boolean>) {
   const controlBar = document.querySelector('.control-bar') as HTMLDivElement
-
   const controlBarIsOpen = ref(false, (value) => controlBar.classList.toggle('open', value))
 
   // 监听鼠标进入窗口和离开窗口事件
@@ -224,10 +233,11 @@ function controlBar(userInfoIsOpen: Ref<boolean>) {
 export async function createControlBar(room: OpenRoom, userInfoIsOpen: Ref<boolean>) {
   createDom(template)
   topBtn(room.room_id)
-  const { controlBarIsOpen } = controlBar(userInfoIsOpen)
-  const { inputWrap } = danmuInput(controlBarIsOpen, userInfoIsOpen)
   closeBtn()
   minBtn()
+
+  const { controlBarIsOpen } = controlBar(userInfoIsOpen)
+  const { inputWrap } = danmuInput(controlBarIsOpen, userInfoIsOpen)
 
   return {
     inputWrap

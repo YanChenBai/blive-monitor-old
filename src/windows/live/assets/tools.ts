@@ -8,8 +8,10 @@ export interface Ref<T> {
  * @param value
  * @returns
  */
-export function ref<T>(value: T, func: (newValue: T) => void, immediately = false): Ref<T> {
-  if (immediately === true) func(value)
+export function ref<T>(value: T, func?: (newValue: T) => void, immediately = false): Ref<T> {
+  // 执行函数
+  const execFunc = (val: T) => (func && typeof func === 'function' ? func(val) : '')
+  if (immediately) execFunc(value)
   return new Proxy(
     { value },
     {
@@ -18,7 +20,7 @@ export function ref<T>(value: T, func: (newValue: T) => void, immediately = fals
       },
       set(target, _prop, newValue, _receiver) {
         target.value = newValue
-        func(newValue)
+        execFunc(newValue)
         return true
       }
     }

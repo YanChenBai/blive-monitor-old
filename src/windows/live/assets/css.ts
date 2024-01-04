@@ -221,7 +221,7 @@ export default css`
     right: 10px;
     top: 20px;
     background-color: rgba(0, 0, 0, 0.7);
-    padding: 6px;
+    padding-left: 4px;
     border-radius: 50px;
     transition: all 0.3s;
     transform: translateX(calc(100% + 10px));
@@ -242,7 +242,7 @@ export default css`
     border-radius: 19px;
   }
   .user-info .name {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     padding: 0 6px;
   }
