@@ -11,6 +11,7 @@ import { randomMouseMove } from './assets/randomMouseMove'
 
 // 清除日志显示的持久化
 clearPlayerLog()
+
 window.onload = async () => {
   awaitLivePlayer().then((livePlayer) => {
     // 启用网页全屏

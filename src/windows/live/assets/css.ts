@@ -75,13 +75,25 @@ export default css`
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 9999999;
+    z-index: 999999;
     width: 100vw;
     height: 40px;
     font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  /** 幻星派对互动按钮 */
+  #game-id {
+    display: none !important;
+  }
+
+  @media screen and (max-height: 560px) {
+    #anchor-guest-box-id {
+      transform: translate(-50%, 0) scale(0.8) !important;
+      bottom: 0;
+      top: 0 !important;
+    }
   }
 
   .control-bar {
