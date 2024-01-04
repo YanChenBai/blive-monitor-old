@@ -14,14 +14,12 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@types/uuid": "^9.0.7",
+    "@unocss/reset": "^0.58.3",
     "@vueuse/core": "^10.7.0",
     "electron-updater": "^6.1.7",
-    "gridstack": "^10.0.1",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.0.0",
     "pinyin-pro": "^3.18.5",
-    "uuid": "^9.0.1",
     "vue": "^3.3.11",
     "vue-router": "4"
   },

@@ -1,3 +1,4 @@
+import { chunk } from 'lodash'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -37,6 +38,16 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          pinyin: ['pinyin-pro'],
+          ui: ['naive-ui']
+        }
+      }
     }
   }
 })

@@ -7,8 +7,8 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    MaterialSymbolsCancelRounded: typeof import('./src/components/Icons/MaterialSymbolsCancelRounded.vue')['default']
     MaterialSymbolsDeleteRounded: typeof import('./src/components/Icons/MaterialSymbolsDeleteRounded.vue')['default']
+    MaterialSymbolsSyncRounded: typeof import('./src/components/Icons/MaterialSymbolsSyncRounded.vue')['default']
     MingcuteCloseFill: typeof import('./src/components/Icons/MingcuteCloseFill.vue')['default']
     MingcuteMinimizeFill: typeof import('./src/components/Icons/MingcuteMinimizeFill.vue')['default']
     NAvatar: typeof import('naive-ui')['NAvatar']
@@ -25,7 +25,6 @@ declare module 'vue' {
     NLayout: typeof import('naive-ui')['NLayout']
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
     NModal: typeof import('naive-ui')['NModal']
-    NNotificationProvider: typeof import('naive-ui')['NNotificationProvider']
     NPopconfirm: typeof import('naive-ui')['NPopconfirm']
     NProgress: typeof import('naive-ui')['NProgress']
     NScrollbar: typeof import('naive-ui')['NScrollbar']
@@ -33,6 +32,7 @@ declare module 'vue' {
     NSpin: typeof import('naive-ui')['NSpin']
     NText: typeof import('naive-ui')['NText']
     NThing: typeof import('naive-ui')['NThing']
+    RoomListItem: typeof import('./src/components/RoomListItem.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Updater: typeof import('./src/components/Updater.vue')['default']

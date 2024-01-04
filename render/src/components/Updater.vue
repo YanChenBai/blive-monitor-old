@@ -33,7 +33,7 @@
         <div m-t-10px v-if="updateInfo">
           <n-text type="primary">更新日志 v{{ updateInfo.version }}</n-text>
           <n-scrollbar h-300px>
-            <div class="release-notes" v-html="updateInfo.releaseNotes"></div>
+            <div class="[:deep(&)]:p-l-10px release-notes" v-html="updateInfo.releaseNotes"></div>
           </n-scrollbar>
         </div>
       </n-spin>
@@ -115,8 +115,4 @@ loadingWrap(loading, 'version', () =>
 checkUpdate(false)
 </script>
 
-<style scoped>
-:deep(.release-notes ul) {
-  padding-left: 10px;
-}
-</style>
+<style scoped></style>

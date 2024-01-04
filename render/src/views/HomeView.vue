@@ -2,66 +2,37 @@
   <div p-10px flex flex-col>
     <div flex w-full align="center">
       <n-input-group>
-        <n-input w-full type="primary" v-model:value="keyword" placeholder="输入房间号👌" />
+        <n-input
+          w-full
+          type="primary"
+          v-model:value="keyword"
+          placeholder="输入房间号👌"
+          clearable
+        />
         <n-button type="primary" @click="add()">添加</n-button>
       </n-input-group>
       <n-button type="primary" m-l-6px @click="openBili()">登录</n-button>
-      <n-button type="primary" m-l-6px m-r-6px @click="reload()" :loading="reloadLoading"
-        >刷新</n-button
-      >
+      <n-button type="primary" m-l-6px m-r-6px @click="refresh()" :loading="refreshLoading">
+        <template #icon>
+          <n-icon>
+            <MaterialSymbolsSyncRounded />
+          </n-icon>
+        </template>
+      </n-button>
       <Updater />
     </div>
 
     <n-spin description="加载中" :show="newVersionInit">
       <div m-t-10px of-hidden>
-        <n-scrollbar style="height: calc(100vh - 96px)">
+        <n-scrollbar class="h-[calc(100vh-96px)]">
           <n-card
             v-for="(item, index) in searchList"
             :key="index"
             :bordered="false"
             size="small"
-            class="item"
+            class="[&:not(:last-child)]:m-b-10px"
           >
-            <n-thing>
-              <template #avatar>
-                <n-badge :value="item.live_status === 1 ? '播' : ''">
-                  <n-avatar :size="48" :src="item.face" />
-                </n-badge>
-              </template>
-              <template #header>
-                <n-text type="primary">{{ item.name }}</n-text>
-              </template>
-              <template #description>
-                <n-text text-14px>
-                  <template v-if="item.short_id && item.short_id !== '0'">
-                    {{ item.short_id }}
-                  </template>
-                  <template v-else>
-                    {{ item.room_id }}
-                  </template>
-                </n-text>
-              </template>
-              <template #header-extra>
-                <n-space>
-                  <n-button round size="small" type="primary" @click="openLive(item)"
-                    >打开</n-button
-                  >
-                  <n-popconfirm
-                    @positive-click="remove(item.room_id)"
-                    positive-text="尊嘟"
-                    negative-text="假嘟"
-                    placement="bottom"
-                  >
-                    <template #trigger>
-                      <n-button circle size="small" type="error">
-                        <n-icon size="16"> <MaterialSymbolsDeleteRounded /> </n-icon>
-                      </n-button>
-                    </template>
-                    要删噜!
-                  </n-popconfirm>
-                </n-space>
-              </template>
-            </n-thing>
+            <RoomListItem :room="item" @open="openRoom" @remove="remove"></RoomListItem>
           </n-card>
         </n-scrollbar>
       </div>
@@ -70,100 +41,70 @@
 </template>
 
 <script setup lang="ts">
-import { type Room, useRoomsStore } from '@/stores/rooms'
-import MaterialSymbolsDeleteRounded from '@/components/Icons/MaterialSymbolsDeleteRounded.vue'
-import Updater from '@/components/Updater.vue'
+import { type Room, useRoomsStore, ResultMesg } from '@/stores/rooms'
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { closeEvents, minEvents } from '@/utils/events'
 import { match } from 'pinyin-pro'
 import { useMessage } from 'naive-ui'
+import { loadingWrapRef } from '@/utils/loadingWrap'
+import Updater from '@/components/Updater.vue'
+import RoomListItem from '@/components/RoomListItem.vue'
 
 defineOptions({ name: 'HomeView' })
 
 const message = useMessage()
-const { rooms } = storeToRefs(useRoomsStore())
+const roomsStore = useRoomsStore()
+const { rooms } = storeToRefs(roomsStore)
 const keyword = ref<string>('')
 const newVersionInit = ref(false)
-const reloadLoading = ref(false)
+const refreshLoading = ref(false)
 
 async function add() {
-  const regex = /^\d+$/
-  const val = keyword.value.trim()
-
-  if (!regex.test(val)) {
-    message.error('请输入正确格式的房间号!')
-    return
-  }
-
-  if (val.length <= 0) {
-    message.error('请输入房间号!')
-    return
-  }
-
-  const room = await window.blive.getRoomInfo(val)
-  const index = rooms.value.findIndex((item) => item.room_id === room.room_id)
-  room.tags = room.tags.replace(new RegExp(',', 'g'), ' ')
-
-  if (index === -1) {
-    rooms.value.push(room)
-  } else {
-    rooms.value[index] = room
-    message.error('加过了!')
+  const status = await roomsStore.add(keyword.value)
+  switch (status) {
+    case ResultMesg.OK:
+      message.success('添加成功')
+      break
+    case ResultMesg.Empty:
+      message.error('房间号不能为空')
+      break
+    case ResultMesg.Format:
+      message.error('房间号格式不正确')
+      break
+    case ResultMesg.Repeat:
+      message.error('直播间已添加噜')
+      break
   }
 }
 
 function remove(room_id: string) {
-  const findIndex = rooms.value.findIndex((item) => item.room_id === room_id)
-  rooms.value.splice(findIndex, 1)
+  const status = roomsStore.remove(room_id)
+  switch (status) {
+    case ResultMesg.OK:
+      message.success('删除成功')
+      break
+    case ResultMesg.NotFound:
+      message.error('列表里没这个房间捏')
+      break
+  }
 }
 
-function openLive(room: Room) {
-  window.blive.ipcRenderer.send('main:openLive', { ...room })
-}
-
-function openBili() {
-  window.blive.ipcRenderer.send('main:openBili')
-}
-
-async function reload() {
-  reloadLoading.value = true
-  try {
-    const uids = rooms.value.map((item) => item.uid)
-    const res = await window.blive.getManyRoomInfo(uids)
-
-    for (const key in res) {
-      const findIndex = rooms.value.findIndex((item) => item.uid === key)
-      if (findIndex !== -1) {
-        const { title, face, uname, live_status } = res[key]
-        rooms.value[findIndex] = {
-          ...rooms.value[findIndex],
-          title,
-          face,
-          name: uname,
-          live_status
-        }
+const refresh = () =>
+  loadingWrapRef(refreshLoading, async () => {
+    return await roomsStore.refresh().then((res) => {
+      if (res === ResultMesg.OK) {
+        message.success('刷新成功')
+      } else {
+        message.error('刷新失败')
       }
-    }
-    message.success('直播间数据更新成功')
-  } catch (error) {
-    message.error('更新直播间数据失败')
-  }
-  reloadLoading.value = false
-}
+      return res
+    })
+  })
 
-async function init() {
-  const notHaveUids = rooms.value.filter((item) => (item.uid ? false : true))
-  if (notHaveUids.length > 0) {
-    newVersionInit.value = true
-    for (const item of notHaveUids) {
-      const room = await window.blive.getRoomInfo(item.room_id)
-      const index = rooms.value.findIndex((item) => item.room_id === room.room_id)
-      if (index !== -1) rooms.value[index] = room
-    }
-    newVersionInit.value = false
-  }
-}
+const openRoom = (room: Room) => window.blive.ipcRenderer.send('main:openRoom', { ...room })
+
+const openBili = () => window.blive.ipcRenderer.send('main:openBili')
 
 const livePreRegex = /^live /
 // 搜索
@@ -219,14 +160,9 @@ minEvents.push(() => {
   window.blive.ipcRenderer.send('main:min')
 })
 
-onMounted(async () => {
-  await init()
-  await reload()
+onMounted(() => {
+  refresh()
 })
 </script>
 
-<style scoped>
-.item:not(:last-child) {
-  margin-bottom: 10px;
-}
-</style>
+<style scoped></style>

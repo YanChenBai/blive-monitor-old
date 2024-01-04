@@ -35,18 +35,6 @@ export default async function () {
     app.quit()
   })
 
-  // win.webContents.openDevTools({
-  //   mode: 'detach',
-  //   activate: true
-  // })
-
-  if (!app.isPackaged) {
-    win.webContents.openDevTools({
-      mode: 'detach',
-      activate: true
-    })
-  }
-
   /** 关闭窗口 */
   ipcMain.on('main:close', () => {
     win.close()
@@ -65,9 +53,7 @@ export default async function () {
   ipcMain.handle('main:getManyRoomInfo', async (_e, uids: string[]) => await getManyInfo(uids))
 
   // 打开直播
-  ipcMain.on('main:openLive', (_event, options: OpenRoom) => {
-    liveWin(options)
-  })
+  ipcMain.on('main:openRoom', (_event, options: OpenRoom) => liveWin(options))
 
   // 打开b站首页登录
   ipcMain.on('main:openBili', () => biliWin())
@@ -79,6 +65,13 @@ export default async function () {
   )
 
   Menu.setApplicationMenu(null)
+
+  if (!app.isPackaged) {
+    win.webContents.openDevTools({
+      mode: 'detach',
+      activate: true
+    })
+  }
 
   return win
 }

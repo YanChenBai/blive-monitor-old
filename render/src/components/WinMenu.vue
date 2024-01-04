@@ -2,11 +2,10 @@
   <div flex h-32px w-full class="menu" bg="#1d1d1d">
     <div w-full flex items-center p-l-10px drag>
       <n-gradient-text
-        class="title"
-        :gradient="{
-          from: '#f54ea2',
-          to: '#ff7676'
-        }"
+        font="600 size-16px"
+        p="t-4px l-6px"
+        weight="600"
+        :gradient="{ from: '#f54ea2', to: '#ff7676' }"
       >
         BLIVE MONITOR
       </n-gradient-text>
@@ -54,10 +53,4 @@ async function close() {
 }
 </script>
 
-<style scoped>
-.title {
-  font-weight: 600;
-  font-size: 16px;
-  padding-top: 4px;
-}
-</style>
+<style scoped></style>

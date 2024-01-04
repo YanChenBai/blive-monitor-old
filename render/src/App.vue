@@ -1,8 +1,6 @@
 <template>
   <n-config-provider
     abstract
-    :locale="zhCN"
-    :date-locale="dateZhCN"
     :theme="darkTheme"
     :theme-overrides="{
       common: {
@@ -17,23 +15,21 @@
       }
     }"
   >
-    <n-notification-provider>
-      <n-dialog-provider>
-        <n-message-provider placement="bottom-right">
-          <div h-screen w-screen flex flex-col>
-            <WinMenu @close="close" @min="min" />
-            <n-layout flex-1>
-              <RouterView />
-            </n-layout>
-          </div>
-        </n-message-provider>
-      </n-dialog-provider>
-    </n-notification-provider>
+    <n-dialog-provider>
+      <n-message-provider placement="bottom">
+        <div h-screen w-screen flex flex-col>
+          <WinMenu @close="close" @min="min" />
+          <n-layout flex-1>
+            <RouterView />
+          </n-layout>
+        </div>
+      </n-message-provider>
+    </n-dialog-provider>
   </n-config-provider>
 </template>
 
 <script setup lang="ts">
-import { darkTheme, zhCN, dateZhCN } from 'naive-ui'
+import { darkTheme } from 'naive-ui'
 import { RouterView } from 'vue-router'
 import WinMenu from './components/WinMenu.vue'
 import { closeEvents, minEvents } from '@/utils/events'
@@ -48,12 +44,3 @@ function min() {
 </script>
 
 <style scoped></style>
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
-body {
-  overflow: hidden;
-}
-</style>

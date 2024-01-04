@@ -15,7 +15,6 @@ if (!app.isPackaged) {
 }
 autoUpdater.logger = logger
 autoUpdater.autoDownload = true
-logger.info(autoUpdater.getFeedURL())
 
 let isDownloaded = false
 let isUpdateAvailable = false
@@ -46,9 +45,9 @@ export async function initAutoUpdater(win: BrowserWindow) {
 
   // 有新的版本
   autoUpdater.addListener('update-available', (event) => {
-    console.log('available=>', event)
-
     if (isUpdateAvailable) return
+    logger.info(event)
+
     clearInterval(timer)
     isUpdateAvailable = true
     win.webContents.send('update:available', true)
@@ -60,9 +59,11 @@ export async function initAutoUpdater(win: BrowserWindow) {
 
   // 下载完成
   autoUpdater.addListener('update-downloaded', (event) => {
-    console.log('downloaded')
-
+    if (isDownloaded) true
     isDownloaded = true
+
+    logger.info(event)
+
     // 通知
     const notification = newNotification(`👌下载完喽 v${event.version}`, '芜湖!')
     notification.addListener('click', () => renderOpenUpdate(win))
@@ -94,7 +95,6 @@ export async function initAutoUpdater(win: BrowserWindow) {
   // 获取可更新
   ipcMain.handle('update:check', async () => {
     const res = await autoUpdater.checkForUpdates()
-
     if (res) {
       if (!isNewVresion(autoUpdater.currentVersion.version, res.updateInfo.version)) {
         return null
