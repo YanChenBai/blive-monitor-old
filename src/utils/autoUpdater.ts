@@ -79,12 +79,10 @@ export async function initAutoUpdater(win: BrowserWindow) {
   })
 
   // 更新错误重试
-  autoUpdater.addListener('error', () => {
-    if (!isError) {
-      isError = true
-      newNotification(`😵 更新错误`, '点击重试').show()
-      win.webContents.send('update:error', false)
-    }
+  autoUpdater.addListener('error', (error, msg) => {
+    logger.error('msg', msg)
+    logger.error('error', error)
+    win.webContents.send('update:error', false)
   })
 
   // 获取当前版本

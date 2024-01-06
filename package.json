@@ -1,6 +1,6 @@
 {
   "name": "blive-monitor",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "b站直播监控工具,dd狂喜",
   "main": "./dist/main.js",
   "type": "commonjs",
