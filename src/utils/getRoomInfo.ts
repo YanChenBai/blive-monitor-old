@@ -7,7 +7,7 @@ import { chunk } from 'lodash'
  * @param room_id 房间号, 支持短号
  */
 export async function getInfo(room_id: string) {
-  const { uid, short_id, tags, live_status, title } = await fetch(
+  const { uid, short_id, tags, live_status, title, keyframe } = await fetch(
     `https://api.live.bilibili.com/room/v1/Room/get_info?id=${room_id}`
   )
     .then((res) => res.json() as Promise<RoomInfo>)
@@ -18,7 +18,8 @@ export async function getInfo(room_id: string) {
           short_id: res.data.short_id,
           tags: res.data.tags,
           live_status: res.data.live_status,
-          title: res.data.title
+          title: res.data.title,
+          keyframe: res.data.keyframe
         }
       } else {
         return Promise.reject(res)
@@ -38,7 +39,8 @@ export async function getInfo(room_id: string) {
           live_status: live_status,
           tags: tags,
           title,
-          medal_name: res.data.medal_name
+          medal_name: res.data.medal_name,
+          keyframe
         }
       } else {
         return Promise.reject(res)

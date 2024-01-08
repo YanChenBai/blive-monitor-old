@@ -96,6 +96,7 @@ export interface OpenRoom {
   tags: string // 主播的标签
   title: string // 直播标题
   medal_name: string // 粉丝牌名字
+  keyframe: string // 封面
 }
 
 export interface Emoticon {

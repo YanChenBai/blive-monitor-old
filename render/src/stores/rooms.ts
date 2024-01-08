@@ -12,6 +12,7 @@ export interface Room {
   tags: string // 主播的标签
   title: string // 直播标题
   medal_name: string // 粉丝牌名字
+  keyframe: string // 封面
 }
 
 export enum ResultMesg {
@@ -83,13 +84,14 @@ export const useRoomsStore = defineStore(
         for (const key in res) {
           const findIndex = rooms.value.findIndex((item) => item.uid === key)
           if (findIndex !== -1) {
-            const { title, face, uname, live_status } = res[key]
+            const { title, face, uname, live_status, keyframe } = res[key]
             rooms.value[findIndex] = {
               ...rooms.value[findIndex],
               title,
               face,
               name: uname,
-              live_status
+              live_status,
+              keyframe
             }
           }
         }

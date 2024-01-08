@@ -1,9 +1,26 @@
 <template>
   <n-thing>
     <template #avatar>
-      <n-badge :value="room.live_status === 1 ? '播' : ''">
-        <n-avatar :size="48" :src="room.face" />
-      </n-badge>
+      <n-popover trigger="hover" placement="right" :show-arrow="false">
+        <template #trigger>
+          <n-badge :value="room.live_status === 1 ? '播' : ''">
+            <n-avatar :size="48" :src="room.face" cursor-pointer />
+          </n-badge>
+        </template>
+        <div>
+          <div
+            :class="{
+              'm-b-6px': room.keyframe
+            }"
+            font="600"
+          >
+            {{ room.title }}
+          </div>
+          <div v-if="room.keyframe">
+            <img max="w-260px h-260px" rd-4px :src="room.keyframe" />
+          </div>
+        </div>
+      </n-popover>
     </template>
     <template #header>
       <n-text type="primary">{{ room.name }}</n-text>
