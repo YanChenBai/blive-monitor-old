@@ -7,11 +7,11 @@ import { MSG_ICON_PATH } from './paths'
 
 // 配置自动更新
 if (!app.isPackaged) {
-  Object.defineProperty(app, 'isPackaged', {
-    get() {
-      return true
-    }
-  })
+  // Object.defineProperty(app, 'isPackaged', {
+  //   get() {
+  //     return true
+  //   }
+  // })
   autoUpdater.updateConfigPath = path.join(__dirname, '../../dev-app-update.yml')
 }
 autoUpdater.logger = logger
