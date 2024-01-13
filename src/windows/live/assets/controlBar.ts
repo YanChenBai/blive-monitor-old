@@ -14,23 +14,28 @@ const inputIsFocus = ref(false)
 const btns: Btn[] = [
   {
     name: 'close-win',
-    value: '关',
+    value: '关闭',
     class: ''
   },
   {
     name: 'input-switch',
-    value: '弹',
+    value: '弹幕',
     class: ''
   },
   {
     name: 'min-win',
-    value: '小',
+    value: '最小',
     class: ''
   },
   {
     name: 'top-win',
-    value: '顶',
+    value: '置顶',
     class: 'top'
+  },
+  {
+    name: 'keep-aspect-ratio',
+    value: '比例',
+    class: ''
   }
 ]
 
@@ -110,27 +115,35 @@ function minBtn() {
   minBtn.addEventListener('click', () => ipcRenderer.send(`min:${win_id}`))
 }
 
-const getIstop = (room_id: string) => window.localStorage.getItem(`isTop:${room_id}`)
-const addIstop = (room_id: string) => window.localStorage.setItem(`isTop:${room_id}`, 'o')
-const removeIstop = (room_id: string) => window.localStorage.removeItem(`isTop:${room_id}`)
-
 /** 置顶 */
-async function topBtn(room_id: string) {
-  const topBtn = document.querySelector('.top-win>button') as HTMLButtonElement
-  const isTopStorage = getIstop(room_id)
+async function topBtn() {
+  const btn = document.querySelector('.top-win>button') as HTMLButtonElement
   const isTop = ref(
-    isTopStorage ? true : false,
-    (value) => {
-      topBtn.classList.toggle('top', value)
-      value ? addIstop(room_id) : removeIstop(room_id)
-      ipcRenderer.invoke(`setAlwaysOnTop:${win_id}`, value)
-    },
+    (await ipcRenderer.invoke(`getAlwaysOnTop:${win_id}`)) as boolean,
+    (value) => btn.classList.toggle('top', value),
     true
   )
 
   // 监听置顶
-  topBtn.addEventListener('click', async () => {
+  btn.addEventListener('click', async () => {
     isTop.value = !isTop.value
+    ipcRenderer.invoke(`setAlwaysOnTop:${win_id}`, isTop.value)
+  })
+}
+
+async function keepAspectRatioBtn() {
+  const btn = document.querySelector('.keep-aspect-ratio>button') as HTMLButtonElement
+  const isKeep = ref(
+    (await ipcRenderer.invoke(`getKeepAspectRatio:${win_id}`)) as boolean,
+    (value) => {
+      btn.classList.toggle('open', value)
+    },
+    true
+  )
+
+  btn.addEventListener('click', async () => {
+    isKeep.value = !isKeep.value
+    ipcRenderer.invoke(`setKeepAspectRatio:${win_id}`, isKeep.value)
   })
 }
 
@@ -232,7 +245,8 @@ function controlBar(userInfoIsOpen: Ref<boolean>) {
 
 export async function createControlBar(room: OpenRoom, userInfoIsOpen: Ref<boolean>) {
   createDom(template)
-  topBtn(room.room_id)
+  topBtn()
+  keepAspectRatioBtn()
   closeBtn()
   minBtn()
 

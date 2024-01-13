@@ -20,6 +20,11 @@ export const LOG_PATH = app.isPackaged
   ? path.resolve(ROAMING_PATH, 'logs', 'info.log')
   : path.resolve(app.getAppPath(), 'resources', 'logs', 'info.log')
 
+/** 数据json路径 */
+export const DB_PATH = app.isPackaged
+  ? path.resolve(ROAMING_PATH, 'db.json')
+  : path.resolve(app.getAppPath(), 'resources', 'db.json')
+
 /** 图标路径 */
 export const ICONS_PATH = app.isPackaged
   ? path.resolve(ROAMING_PATH, 'icons')

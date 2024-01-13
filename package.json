@@ -1,6 +1,6 @@
 {
   "name": "blive-monitor",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "b站直播监控工具,dd狂喜",
   "main": "./dist/main.js",
   "type": "commonjs",
@@ -31,7 +31,7 @@
     "unocss": "^0.58.0"
   },
   "dependencies": {
-    "@commonify/lowdb": "^3.0.0",
+    "@huanshiwushuang/lowdb": "^6.0.2",
     "@tootallnate/once": "^3.0.0",
     "@types/lodash": "^4.14.202",
     "@types/uuid": "^9.0.7",

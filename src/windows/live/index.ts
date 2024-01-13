@@ -7,6 +7,7 @@ import { logger } from '../../utils/logger'
 import css from './assets/css'
 import crypto from 'crypto'
 import { ICONS_PATH } from '../../utils/paths'
+import { useService } from './service'
 
 const md5 = (str: string) => crypto.createHash('md5').update(str).digest('hex')
 /**
@@ -53,7 +54,7 @@ export default async function (options: OpenRoom) {
   // 创建窗口
   const win = new BrowserWindow({
     width: 600,
-    height: 340,
+    height: 337,
     transparent: false,
     frame: false,
     show: true,
@@ -91,12 +92,36 @@ export default async function (options: OpenRoom) {
   // 获取房间数据
   ipcMain.handle(`getRoomData:${win_id}`, () => options)
 
+  // 设置保持比例
+  const setKeepAspectRatio = (state: boolean) =>
+    state ? win.setAspectRatio(16 / 9) : win.setAspectRatio(0)
+
+  // 初始化配置
+  const service = await useService(options)
+  const roomConfig = service.getRoomConfig()
+
+  // 初始化是否保持比例
+  if (roomConfig.isKeepAspectRatio) setKeepAspectRatio(true)
+
+  // 初始化置顶状态
+  if (roomConfig.isAlwaysOnTop) win.setAlwaysOnTop(true)
+
   // 获取置顶状态
-  ipcMain.handle(`isAlwaysOnTop:${win_id}`, () => win.isAlwaysOnTop())
+  ipcMain.handle(`getAlwaysOnTop:${win_id}`, () => service.getRoomConfig().isAlwaysOnTop)
 
   // 设置窗口置顶状态
   ipcMain.handle(`setAlwaysOnTop:${win_id}`, (_event, is: boolean) => {
     win.setAlwaysOnTop(is)
+    service.changeIsTop(is)
+  })
+
+  // 获取是否保持比例
+  ipcMain.handle(`getKeepAspectRatio:${win_id}`, () => service.getRoomConfig().isKeepAspectRatio)
+
+  // 设置比例
+  ipcMain.handle(`setKeepAspectRatio:${win_id}`, (_event, is: boolean) => {
+    setKeepAspectRatio(is)
+    service.changeIsKeepAspectRatio(is)
   })
 
   win.addListener('ready-to-show', () => win.focus())

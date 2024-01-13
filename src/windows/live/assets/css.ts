@@ -112,14 +112,11 @@ export default css`
   .btn {
     transition: all 0.3s;
     border: 0;
-    padding: 6px;
+    padding: 2px;
     color: #fff;
-    height: 36px;
     width: 36px;
-    border-radius: 20px;
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 16px;
     box-sizing: border-box;
     display: block;
     font-size: 12px;
@@ -127,7 +124,8 @@ export default css`
 
   .input-switch,
   .min-win,
-  .top-win {
+  .top-win,
+  .keep-aspect-ratio {
     margin-top: 10px;
   }
 
@@ -164,6 +162,18 @@ export default css`
   }
 
   .top-win button.top {
+    transform: rotate(180deg);
+  }
+
+  .keep-aspect-ratio button {
+    background: #fbc94b;
+    border: 2px solid #fbd36e;
+  }
+  .keep-aspect-ratio button:hover {
+    background: rgba(251, 201, 75, 0.8);
+  }
+
+  .keep-aspect-ratio button.open {
     transform: rotate(180deg);
   }
 
