@@ -1,4 +1,4 @@
-import { BrowserWindow, Menu, app, ipcMain } from 'electron'
+import { BrowserView, BrowserWindow, Menu, app, ipcMain } from 'electron'
 import path from 'path'
 import fs from 'fs'
 import type { OpenRoom } from '../../types/bili'
@@ -63,9 +63,7 @@ export default async function (options: OpenRoom) {
     backgroundColor: '#101014',
     webPreferences: {
       nodeIntegration: true,
-      webviewTag: true,
-      contextIsolation: false,
-      preload: path.join(__dirname, './preload.js')
+      contextIsolation: false
     }
   })
 
@@ -78,10 +76,24 @@ export default async function (options: OpenRoom) {
 
   const win_id = win.id
 
-  // 注入css
-  win.webContents.insertCSS(css)
+  const bliveView = new BrowserView({
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      preload: path.join(__dirname, './preload.js')
+    }
+  })
 
-  win.loadURL(`https://live.bilibili.com/${options.room_id}?win_id=${win_id}`)
+  // 注入css
+  bliveView.webContents.insertCSS(css)
+  bliveView.setBounds({ x: 0, y: 0, height: 337, width: 600 })
+  bliveView.setAutoResize({
+    width: true,
+    height: true
+  })
+  bliveView.webContents.loadURL(`https://live.bilibili.com/${options.room_id}?win_id=${win_id}`)
+
+  win.addBrowserView(bliveView)
 
   // 监听窗口关闭
   ipcMain.on(`close:${win_id}`, () => win.close())
