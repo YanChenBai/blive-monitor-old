@@ -58,19 +58,23 @@ export default async function (room: Room) {
   const defWidth = 600
   const defHeight = 337
 
-  const defOptions: Electron.BrowserWindowConstructorOptions = {
+  const getSize = () => ({
     width: roomConfig.width || defWidth,
     height: roomConfig.height || defHeight
-  }
+  })
 
-  if (roomConfig.x && roomConfig.y) {
-    defOptions.x = roomConfig.x
-    defOptions.y = roomConfig.y
-  }
+  const getPosition = () =>
+    roomConfig.x && roomConfig.y
+      ? {
+          x: roomConfig.x,
+          y: roomConfig.y
+        }
+      : {}
 
   // 创建窗口
   const win = new BrowserWindow({
-    ...defOptions,
+    ...getSize(),
+    ...getPosition(),
     transparent: false,
     frame: false,
     show: true,
@@ -105,8 +109,7 @@ export default async function (room: Room) {
   bliveView.setBounds({
     x: 0,
     y: 0,
-    width: roomConfig.width || defWidth,
-    height: roomConfig.height || defHeight
+    ...getSize()
   })
   bliveView.setAutoResize({
     horizontal: true,
