@@ -1,10 +1,10 @@
 import { html } from 'proper-tags'
 import { ipcRenderer } from 'electron'
 import { win_id } from './getWinId'
-import { OpenRoom } from '../../../types/bili'
+import { Room } from '../../../types/bili'
 import { createDom, ref } from './tools'
 
-export function createUaerInfo(room: OpenRoom) {
+export function createUaerInfo(room: Room) {
   createDom(html`
     <div class="user-info" blive-monitor>
       <div class="face">

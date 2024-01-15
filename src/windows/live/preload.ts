@@ -5,7 +5,7 @@ import { awaitLivePlayer, awaitVideoEl } from './assets/livePlayer'
 import { clearPlayerLog } from './assets/clearPlayerLog'
 import { createEmojiPopover } from './assets/emotIcons'
 import { win_id } from './assets/getWinId'
-import { OpenRoom } from '../../types/bili'
+import { Room } from '../../types/bili'
 import { ipcRenderer } from 'electron'
 import { randomMouseMove } from './assets/randomMouseMove'
 
@@ -31,7 +31,7 @@ window.onload = async () => {
   document.body.classList.add('hide-aside-area')
   createChangeVolume()
 
-  const room = (await ipcRenderer.invoke(`getRoomData:${win_id}`)) as OpenRoom
+  const room = (await ipcRenderer.invoke(`getRoomData:${win_id}`)) as Room
 
   const { userInfoIsOpen } = createUaerInfo(room)
   createControlBar(room, userInfoIsOpen).then(({ inputWrap }) => {

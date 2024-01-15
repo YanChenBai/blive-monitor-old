@@ -2,7 +2,7 @@ import { html } from 'proper-tags'
 import { Ref, createDom, ref } from './tools'
 import { ipcRenderer } from 'electron'
 import { win_id } from './getWinId'
-import { OpenRoom } from '../../../types/bili'
+import { Room } from '../../../types/bili'
 
 type Btn = {
   name: string
@@ -243,7 +243,7 @@ function controlBar(userInfoIsOpen: Ref<boolean>) {
   }
 }
 
-export async function createControlBar(room: OpenRoom, userInfoIsOpen: Ref<boolean>) {
+export async function createControlBar(room: Room, userInfoIsOpen: Ref<boolean>) {
   createDom(template)
   topBtn()
   keepAspectRatioBtn()

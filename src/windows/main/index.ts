@@ -2,7 +2,7 @@ import { BrowserWindow, Menu, app, ipcMain } from 'electron'
 import path from 'path'
 import liveWin from '../live'
 import biliWin from '../bili'
-import type { OpenRoom } from '../../types/bili'
+import type { Room } from '../../types/bili'
 import { getInfo, getManyInfo } from '../../utils/getRoomInfo'
 import { RENDER_PATH } from '../../utils/paths'
 
@@ -50,7 +50,7 @@ export default async function () {
   ipcMain.handle('main:getManyRoomInfo', async (_e, uids: string[]) => await getManyInfo(uids))
 
   // 打开直播
-  ipcMain.on('main:openRoom', (_event, options: OpenRoom) => liveWin(options))
+  ipcMain.on('main:openRoom', (_event, room: Room) => liveWin(room))
 
   // 打开b站首页登录
   ipcMain.on('main:openBili', () => biliWin())

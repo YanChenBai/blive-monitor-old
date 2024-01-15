@@ -1,7 +1,7 @@
 import { BrowserView, BrowserWindow, Menu, app, ipcMain } from 'electron'
 import path from 'path'
 import fs from 'fs'
-import type { OpenRoom } from '../../types/bili'
+import type { Room } from '../../types/bili'
 import axios from 'axios'
 import { logger } from '../../utils/logger'
 import css from './assets/css'
@@ -48,18 +48,34 @@ async function getFace(url: string) {
   }
 }
 
-export default async function (options: OpenRoom) {
-  const icon = await getFace(options.face)
+export default async function (room: Room) {
+  // 获取logo
+  const icon = await getFace(room.face)
+
+  // 初始化配置
+  const service = await useService(room)
+  const roomConfig = service.getRoomConfig()
+  const defWidth = 600
+  const defHeight = 337
+
+  const defOptions: Electron.BrowserWindowConstructorOptions = {
+    width: roomConfig.width || defWidth,
+    height: roomConfig.height || defHeight
+  }
+
+  if (roomConfig.x && roomConfig.y) {
+    defOptions.x = roomConfig.x
+    defOptions.y = roomConfig.y
+  }
 
   // 创建窗口
   const win = new BrowserWindow({
-    width: 600,
-    height: 337,
+    ...defOptions,
     transparent: false,
     frame: false,
     show: true,
     icon,
-    title: options.name,
+    title: room.name,
     backgroundColor: '#101014',
     webPreferences: {
       nodeIntegration: true,
@@ -86,12 +102,17 @@ export default async function (options: OpenRoom) {
 
   // 注入css
   bliveView.webContents.insertCSS(css)
-  bliveView.setBounds({ x: 0, y: 0, height: 337, width: 600 })
-  bliveView.setAutoResize({
-    width: true,
-    height: true
+  bliveView.setBounds({
+    x: 0,
+    y: 0,
+    width: roomConfig.width || defWidth,
+    height: roomConfig.height || defHeight
   })
-  bliveView.webContents.loadURL(`https://live.bilibili.com/${options.room_id}?win_id=${win_id}`)
+  bliveView.setAutoResize({
+    horizontal: true,
+    vertical: true
+  })
+  bliveView.webContents.loadURL(`https://live.bilibili.com/${room.room_id}?win_id=${win_id}`)
 
   win.addBrowserView(bliveView)
 
@@ -102,15 +123,11 @@ export default async function (options: OpenRoom) {
   ipcMain.on(`min:${win_id}`, () => win.minimize())
 
   // 获取房间数据
-  ipcMain.handle(`getRoomData:${win_id}`, () => options)
+  ipcMain.handle(`getRoomData:${win_id}`, () => room)
 
   // 设置保持比例
   const setKeepAspectRatio = (state: boolean) =>
     state ? win.setAspectRatio(16 / 9) : win.setAspectRatio(0)
-
-  // 初始化配置
-  const service = await useService(options)
-  const roomConfig = service.getRoomConfig()
 
   // 初始化是否保持比例
   if (roomConfig.isKeepAspectRatio) setKeepAspectRatio(true)
@@ -134,6 +151,12 @@ export default async function (options: OpenRoom) {
   ipcMain.handle(`setKeepAspectRatio:${win_id}`, (_event, is: boolean) => {
     setKeepAspectRatio(is)
     service.changeIsKeepAspectRatio(is)
+  })
+
+  win.on('close', () => {
+    const { x, y, width, height } = win.getBounds()
+    service.setPosition(x, y)
+    service.setSize(width, height)
   })
 
   win.addListener('ready-to-show', () => win.focus())

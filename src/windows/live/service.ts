@@ -1,16 +1,16 @@
-import { OpenRoom } from '../../types/bili'
-import { DBConfig, getDB } from '../../utils/db'
+import { Room } from '../../types/bili'
+import { getDB } from '../../utils/db'
 
-export async function useService(options: OpenRoom) {
+export async function useService(room: Room) {
   const defData = {
-    roomId: options.room_id,
+    roomId: room.room_id,
     isKeepAspectRatio: false,
     isAlwaysOnTop: false
   }
   const db = await getDB()
 
-  const findIndex = () => db.chain.get('config').findIndex({ roomId: options.room_id }).value()
-
+  const findIndex = () => db.chain.get('config').findIndex({ roomId: room.room_id }).value()
+  room
   if (findIndex() === -1) {
     db.data.config.push(defData)
     await db.write()
@@ -29,10 +29,25 @@ export async function useService(options: OpenRoom) {
     await db.write()
   }
 
+  async function setPosition(x: number, y: number) {
+    const index = findIndex()
+    db.data.config[index].x = x
+    db.data.config[index].y = y
+    await db.write()
+  }
+  async function setSize(width: number, height: number) {
+    const index = findIndex()
+    db.data.config[index].width = width
+    db.data.config[index].height = height
+    await db.write()
+  }
+
   return {
     findIndex,
     getRoomConfig,
     changeIsTop,
-    changeIsKeepAspectRatio
+    changeIsKeepAspectRatio,
+    setPosition,
+    setSize
   }
 }

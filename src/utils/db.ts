@@ -7,6 +7,10 @@ export interface DBConfig {
   roomId: string
   isAlwaysOnTop: boolean
   isKeepAspectRatio: boolean
+  width?: number
+  height?: number
+  x?: number
+  y?: number
 }
 
 interface DBData {

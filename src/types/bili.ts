@@ -86,7 +86,7 @@ export interface ManyUserInfo extends Response {
   data: Record<string, ManyUserInfoItem>
 }
 
-export interface OpenRoom {
+export interface Room {
   uid: string // 账号id
   room_id: string // 房间id
   short_id: string // 房间短号, 没有时为0
