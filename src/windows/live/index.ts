@@ -177,9 +177,12 @@ export default async function (rooms: Room[]) {
     bliveView.webContents.insertCSS(css)
 
     const { width, height } = getSize()
-    const half_width = width / 2
-    const half_height = height / 2
+    const half_width = parseInt((width / 2).toFixed(0))
+    const half_height = parseInt((height / 2).toFixed(0))
+    // const one_third_width = parseInt((width / 3).toFixed(0))
+    const one_third_height = parseInt((height / 3).toFixed(0))
 
+    // 设置窗口标题
     const layout = [
       [{ width, height, x: 0, y: 0 }],
       [
@@ -187,9 +190,9 @@ export default async function (rooms: Room[]) {
         { width: half_width, height, x: 0, y: 0 }
       ],
       [
-        { width: width, height: height / 3, x: 0, y: 0 },
-        { width: width, height: height / 3, x: 0, y: height / 3 },
-        { width: width, height: height / 3, x: 0, y: (height / 3) * 2 }
+        { width: width, height: one_third_height, x: 0, y: 0 },
+        { width: width, height: one_third_height, x: 0, y: one_third_height },
+        { width: width, height: one_third_height, x: 0, y: one_third_height * 2 }
       ],
       [
         { width: half_width, height: half_height, x: 0, y: 0 },
