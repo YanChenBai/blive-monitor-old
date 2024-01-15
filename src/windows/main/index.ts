@@ -50,7 +50,16 @@ export default async function () {
   ipcMain.handle('main:getManyRoomInfo', async (_e, uids: string[]) => await getManyInfo(uids))
 
   // 打开直播
-  ipcMain.on('main:openRoom', (_event, room: Room) => liveWin(room))
+  ipcMain.on('main:openRoom', (_event, room: Room) => liveWin([room]))
+
+  // 打开组合窗口
+  ipcMain.on('main:openComposeRoom', (_event, rooms: Room[]) => {
+    try {
+      liveWin(rooms)
+    } catch (error) {
+      console.log(error)
+    }
+  })
 
   // 打开b站首页登录
   ipcMain.on('main:openBili', () => biliWin())

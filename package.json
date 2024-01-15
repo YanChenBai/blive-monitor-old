@@ -1,6 +1,6 @@
 {
   "name": "blive-monitor",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "b站直播监控工具,dd狂喜",
   "main": "./dist/main.js",
   "type": "commonjs",
@@ -41,6 +41,7 @@
     "electron-updater": "^6.1.7",
     "lodash": "^4.17.21",
     "log4js": "^6.9.1",
-    "proper-tags": "^2.0.2"
+    "proper-tags": "^2.0.2",
+    "sharp": "^0.33.2"
   }
 }

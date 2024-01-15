@@ -1,6 +1,4 @@
 import { html } from 'proper-tags'
-import { ipcRenderer } from 'electron'
-import { win_id } from './getWinId'
 import { Room } from '../../../types/bili'
 import { createDom, ref } from './tools'
 

@@ -4,7 +4,7 @@ import lodash from 'lodash'
 import { DB_PATH } from './paths'
 
 export interface DBConfig {
-  roomId: string
+  id: string
   isAlwaysOnTop: boolean
   isKeepAspectRatio: boolean
   width?: number

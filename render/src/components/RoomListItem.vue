@@ -37,6 +37,17 @@
     </template>
     <template #header-extra>
       <n-space>
+        <n-button
+          round
+          size="small"
+          :ghost="roomIndex === -1"
+          color="#fb8dac"
+          :focusable="false"
+          @click="select"
+        >
+          选择
+          <template v-if="roomIndex !== -1">{{ roomIndex + 1 }}</template>
+        </n-button>
         <n-button round size="small" type="primary" @click="$emit('open', room)">打开</n-button>
         <n-popconfirm
           @positive-click="$emit('remove', room.room_id)"
@@ -58,14 +69,36 @@
 
 <script setup lang="ts">
 import { type Room } from '@/stores/rooms'
+import { useSelectStore } from '@/stores/select'
+import { useMessage } from 'naive-ui'
+import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 defineOptions({ name: 'RoomListroom' })
-defineProps<{
+const { selectRooms } = storeToRefs(useSelectStore())
+const message = useMessage()
+
+const props = defineProps<{
   room: Room
 }>()
 defineEmits<{
   (e: 'remove', roomId: string): void
   (e: 'open', room: Room): void
 }>()
+const roomIndex = computed(() =>
+  selectRooms.value.findIndex((room) => room.room_id === props.room.room_id)
+)
+function select() {
+  const index = selectRooms.value.findIndex((room) => room.room_id === props.room.room_id)
+  if (index !== -1) {
+    selectRooms.value.splice(index, 1)
+  } else {
+    if (selectRooms.value.length > 3) {
+      message.error('最多只能选择4个房间')
+    } else {
+      selectRooms.value.push(props.room)
+    }
+  }
+}
 </script>
 
 <style scoped></style>

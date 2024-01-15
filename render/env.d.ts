@@ -61,6 +61,9 @@ declare global {
        * @returns
        */
       getManyRoomInfo: (uids: string[]) => Promise<Record<string, ManyUserInfoItem>>
+
+      /** 打开组合窗口 */
+      openComposeRoom: (rooms: Room[]) => Promise
       /** ipc通讯 */
       ipcRenderer: {
         /** 发送 */

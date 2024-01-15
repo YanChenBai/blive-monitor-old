@@ -1,16 +1,16 @@
 import { Room } from '../../types/bili'
 import { getDB } from '../../utils/db'
 
-export async function useService(room: Room) {
+export async function useService(id: string) {
   const defData = {
-    roomId: room.room_id,
+    id,
     isKeepAspectRatio: false,
     isAlwaysOnTop: false
   }
   const db = await getDB()
 
-  const findIndex = () => db.chain.get('config').findIndex({ roomId: room.room_id }).value()
-  room
+  const findIndex = () => db.chain.get('config').findIndex({ id }).value()
+
   if (findIndex() === -1) {
     db.data.config.push(defData)
     await db.write()

@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import { Room } from '../types/bili'
 
 contextBridge.exposeInMainWorld('blive', {
   winCount: () => ipcRenderer.invoke('main:winCount'),
@@ -16,6 +17,8 @@ contextBridge.exposeInMainWorld('blive', {
   isDownloaded: () => ipcRenderer.invoke('update:isDownloaded'),
   /** 是否有跟新 */
   isUpdateAvailable: () => ipcRenderer.invoke('update:isUpdateAvailable'),
+  /** 打开组合窗口 */
+  openComposeRoom: (rooms: Room[]) => ipcRenderer.send('main:openComposeRoom', rooms),
 
   /** ipc */
   ipcRenderer: {

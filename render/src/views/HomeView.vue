@@ -24,7 +24,17 @@
 
     <n-spin description="加载中" :show="newVersionInit">
       <div m-t-10px of-hidden>
-        <n-scrollbar class="h-[calc(100vh-96px)]">
+        <div p="2px" m-b-10px flex v-if="selectRooms.length > 0">
+          <n-button-group>
+            <n-button type="primary" size="small" h-26px @click="openComposeRoom"
+              >打开组合 ({{ selectRooms.length }})</n-button
+            >
+            <n-button secondary size="small" h-26px @click="clearSlectRooms">清空</n-button>
+          </n-button-group>
+        </div>
+        <n-scrollbar
+          :class="[selectRooms.length > 0 ? 'h-[calc(100vh-96px-40px)]' : 'h-[calc(100vh-96px)]']"
+        >
           <n-card
             v-for="(item, index) in searchList"
             :key="index"
@@ -50,11 +60,13 @@ import { useMessage } from 'naive-ui'
 import { loadingWrapRef } from '@/utils/loadingWrap'
 import Updater from '@/components/Updater.vue'
 import RoomListItem from '@/components/RoomListItem.vue'
+import { useSelectStore } from '@/stores/select'
 
 defineOptions({ name: 'HomeView' })
 
 const message = useMessage()
 const roomsStore = useRoomsStore()
+const { selectRooms } = storeToRefs(useSelectStore())
 const { rooms } = storeToRefs(roomsStore)
 const keyword = ref<string>('')
 const newVersionInit = ref(false)
@@ -103,8 +115,15 @@ const refresh = () =>
   })
 
 const openRoom = (room: Room) => window.blive.ipcRenderer.send('main:openRoom', { ...room })
-
 const openBili = () => window.blive.ipcRenderer.send('main:openBili')
+const openComposeRoom = () => {
+  if (selectRooms.value.length < 2) {
+    message.error('至少选择两个直播间')
+  } else {
+    window.blive.openComposeRoom(selectRooms.value.map((item) => ({ ...item })))
+  }
+}
+const clearSlectRooms = () => (selectRooms.value = [])
 
 const livePreRegex = /^live /
 // 搜索

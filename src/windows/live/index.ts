@@ -8,6 +8,7 @@ import css from './assets/css'
 import crypto from 'crypto'
 import { ICONS_PATH } from '../../utils/paths'
 import { useService } from './service'
+import sharp from 'sharp'
 
 const md5 = (str: string) => crypto.createHash('md5').update(str).digest('hex')
 /**
@@ -48,15 +49,83 @@ async function getFace(url: string) {
   }
 }
 
-export default async function (room: Room) {
-  // 获取logo
-  const icon = await getFace(room.face)
+async function composeFace(rooms: Room[]) {
+  if (rooms.length < 2) throw new Error('房间数小于2')
+
+  rooms = rooms.sort((a, b) => parseInt(a.room_id) - parseInt(b.room_id))
+  const imgName = rooms.map((room) => md5(room.face)).join('_')
+  const imgPath = path.join(ICONS_PATH, `${md5(imgName)}.png`)
+  const status = isCached(imgName)
+
+  if (status) {
+    return imgPath
+  } else {
+    // 处理没缓存的情况
+    const compositeImage = sharp({
+      create: {
+        width: 256,
+        height: 256,
+        channels: 4, // 使用 RGBA 模式
+        background: { r: 255, g: 255, b: 255, alpha: 0 } // 设置背景透明
+      }
+    })
+    const layout = [
+      [
+        { x: 0, y: 64 },
+        { x: 128, y: 64 }
+      ],
+      [
+        { x: 0, y: 64 },
+        { x: 128, y: 0 },
+        { x: 128, y: 128 }
+      ],
+      [
+        { x: 0, y: 0 },
+        { x: 128, y: 0 },
+        { x: 0, y: 128 },
+        { x: 128, y: 128 }
+      ]
+    ]
+    const list: sharp.OverlayOptions[] = []
+    for (let index = 0; index < rooms.length; index++) {
+      const face = await getFace(rooms[index].face)
+      list.push({
+        input: await sharp(face).resize(128, 128).toBuffer(),
+        top: layout[rooms.length - 2][index].y,
+        left: layout[rooms.length - 2][index].x
+      })
+    }
+
+    await compositeImage.composite(list).toFile(imgPath)
+    return imgPath
+  }
+}
+
+async function getWinInfo(rooms: Room[]) {
+  let icon = ''
+  if (rooms.length > 1) {
+    icon = await composeFace(rooms)
+  } else {
+    icon = await getFace(rooms[0].face)
+  }
+  return {
+    title: rooms.map((room) => room.name).join(' | '),
+    id: rooms
+      .map((room) => room.room_id)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .join('_'),
+    icon
+  }
+}
+
+export default async function (rooms: Room[]) {
+  const { title, id, icon } = await getWinInfo(rooms)
 
   // 初始化配置
-  const service = await useService(room)
+  const service = await useService(id)
   const roomConfig = service.getRoomConfig()
-  const defWidth = 600
-  const defHeight = 337
+  const defWidth = [600, 1200, 600, 600 * 2][rooms.length - 1]
+  const defHeight = [336, 336, 336 * 3, 336 * 2][rooms.length - 1]
 
   const getSize = () => ({
     width: roomConfig.width || defWidth,
@@ -79,7 +148,7 @@ export default async function (room: Room) {
     frame: false,
     show: true,
     icon,
-    title: room.name,
+    title,
     backgroundColor: '#101014',
     webPreferences: {
       nodeIntegration: true,
@@ -94,43 +163,70 @@ export default async function (room: Room) {
     })
   }
 
-  const win_id = win.id
+  const winId = win.id
 
-  const bliveView = new BrowserView({
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      preload: path.join(__dirname, './preload.js')
-    }
-  })
+  rooms.forEach((room, index) => {
+    const bliveView = new BrowserView({
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+        preload: path.join(__dirname, './preload.js')
+      }
+    })
+    // 注入css
+    bliveView.webContents.insertCSS(css)
 
-  // 注入css
-  bliveView.webContents.insertCSS(css)
-  bliveView.setBounds({
-    x: 0,
-    y: 0,
-    ...getSize()
-  })
-  bliveView.setAutoResize({
-    horizontal: true,
-    vertical: true
-  })
-  bliveView.webContents.loadURL(`https://live.bilibili.com/${room.room_id}?win_id=${win_id}`)
+    const { width, height } = getSize()
+    const half_width = width / 2
+    const half_height = height / 2
 
-  win.addBrowserView(bliveView)
+    const layout = [
+      [{ width, height, x: 0, y: 0 }],
+      [
+        { width: half_width, height, x: half_width, y: 0 },
+        { width: half_width, height, x: 0, y: 0 }
+      ],
+      [
+        { width: width, height: height / 3, x: 0, y: 0 },
+        { width: width, height: height / 3, x: 0, y: height / 3 },
+        { width: width, height: height / 3, x: 0, y: (height / 3) * 2 }
+      ],
+      [
+        { width: half_width, height: half_height, x: 0, y: 0 },
+        { width: half_width, height: half_height, x: half_width, y: 0 },
+        { width: half_width, height: half_height, x: 0, y: half_height },
+        { width: half_width, height: half_height, x: half_width, y: half_height }
+      ]
+    ]
+
+    bliveView.setBounds(layout[rooms.length - 1][index])
+
+    bliveView.setAutoResize({
+      horizontal: true,
+      vertical: true
+    })
+    bliveView.webContents.loadURL(
+      `https://live.bilibili.com/${room.room_id}?win_id=${winId}&room_id=${room.room_id}`
+    )
+    win.addBrowserView(bliveView)
+  })
 
   // 监听窗口关闭
-  ipcMain.on(`close:${win_id}`, () => win.close())
+  ipcMain.on(`close:${winId}`, () => win.close())
 
   // 最小化窗口
-  ipcMain.on(`min:${win_id}`, () => win.minimize())
+  ipcMain.on(`min:${winId}`, () => win.minimize())
 
   // 获取房间数据
-  ipcMain.handle(`getRoomData:${win_id}`, () => room)
+  ipcMain.handle(`getRoomData:${winId}`, (e, roomId: string) =>
+    rooms.find((room) => room.room_id === roomId)
+  )
 
+  // 不同数量下的窗口比例
+  const aspectRatio = [16 / 9, 32 / 9, 16 / 27, 16 / 9]
   // 设置保持比例
   const setKeepAspectRatio = (state: boolean) =>
-    state ? win.setAspectRatio(16 / 9) : win.setAspectRatio(0)
+    state ? win.setAspectRatio(aspectRatio[rooms.length - 1]) : win.setAspectRatio(0)
 
   // 初始化是否保持比例
   if (roomConfig.isKeepAspectRatio) setKeepAspectRatio(true)
@@ -139,19 +235,19 @@ export default async function (room: Room) {
   if (roomConfig.isAlwaysOnTop) win.setAlwaysOnTop(true)
 
   // 获取置顶状态
-  ipcMain.handle(`getAlwaysOnTop:${win_id}`, () => service.getRoomConfig().isAlwaysOnTop)
+  ipcMain.handle(`getAlwaysOnTop:${winId}`, () => service.getRoomConfig().isAlwaysOnTop)
 
   // 设置窗口置顶状态
-  ipcMain.handle(`setAlwaysOnTop:${win_id}`, (_event, is: boolean) => {
+  ipcMain.handle(`setAlwaysOnTop:${winId}`, (_event, is: boolean) => {
     win.setAlwaysOnTop(is)
     service.changeIsTop(is)
   })
 
   // 获取是否保持比例
-  ipcMain.handle(`getKeepAspectRatio:${win_id}`, () => service.getRoomConfig().isKeepAspectRatio)
+  ipcMain.handle(`getKeepAspectRatio:${winId}`, () => service.getRoomConfig().isKeepAspectRatio)
 
   // 设置比例
-  ipcMain.handle(`setKeepAspectRatio:${win_id}`, (_event, is: boolean) => {
+  ipcMain.handle(`setKeepAspectRatio:${winId}`, (_event, is: boolean) => {
     setKeepAspectRatio(is)
     service.changeIsKeepAspectRatio(is)
   })
