@@ -124,8 +124,8 @@ export default async function (rooms: Room[]) {
   // 初始化配置
   const service = await useService(id)
   const roomConfig = service.getRoomConfig()
-  const defWidth = [600, 1200, 600, 600 * 2][rooms.length - 1]
-  const defHeight = [336, 336, 336 * 3, 336 * 2][rooms.length - 1]
+  const defWidth = [600, 600, 600, 600 * 2][rooms.length - 1]
+  const defHeight = [336, 336 * 2, 336 * 3, 336 * 2][rooms.length - 1]
 
   const getSize = () => ({
     width: roomConfig.width || defWidth,
@@ -186,8 +186,8 @@ export default async function (rooms: Room[]) {
     const layout = [
       [{ width, height, x: 0, y: 0 }],
       [
-        { width: half_width, height, x: half_width, y: 0 },
-        { width: half_width, height, x: 0, y: 0 }
+        { width, height: half_height, x: 0, y: 0 },
+        { width, height: half_height, x: 0, y: half_height }
       ],
       [
         { width: width, height: one_third_height, x: 0, y: 0 },
@@ -226,7 +226,7 @@ export default async function (rooms: Room[]) {
   )
 
   // 不同数量下的窗口比例
-  const aspectRatio = [16 / 9, 32 / 9, 16 / 27, 16 / 9]
+  const aspectRatio = [16 / 9, 16 / 18, 16 / 27, 16 / 9]
   // 设置保持比例
   const setKeepAspectRatio = (state: boolean) =>
     state ? win.setAspectRatio(aspectRatio[rooms.length - 1]) : win.setAspectRatio(0)
