@@ -115,7 +115,7 @@ export default async function (room: Room) {
     horizontal: true,
     vertical: true
   })
-  bliveView.webContents.loadURL(`https://live.bilibili.com/${room.room_id}?win_id=${win_id}`)
+  bliveView.webContents.loadURL(`https://live.bilibili.com/blanc/${room.room_id}?win_id=${win_id}`)
 
   win.addBrowserView(bliveView)
 
