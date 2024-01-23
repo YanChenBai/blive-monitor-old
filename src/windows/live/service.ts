@@ -42,12 +42,19 @@ export async function useService(room: Room) {
     await db.write()
   }
 
+  async function setVolume(volume: number) {
+    const index = findIndex()
+    db.data.config[index].volume = volume
+    await db.write()
+  }
+
   return {
     findIndex,
     getRoomConfig,
     changeIsTop,
     changeIsKeepAspectRatio,
     setPosition,
-    setSize
+    setSize,
+    setVolume
   }
 }

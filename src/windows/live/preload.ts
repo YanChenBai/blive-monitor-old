@@ -21,15 +21,17 @@ window.onload = async () => {
     awaitVideoEl().then((el) => {
       el.muted = false
       const info = livePlayer.getPlayerInfo()
-      if (info.volume.disabled) {
-        info.volume.disabled = false
-      }
+
+      // 开启声音
+      if (info.volume.disabled) info.volume.disabled = false
+
+      // 滚动音量
+      createChangeVolume(livePlayer)
     })
   })
 
   // 关闭弹幕侧边栏
   document.body.classList.add('hide-aside-area')
-  createChangeVolume()
 
   const room = (await ipcRenderer.invoke(`getRoomData:${win_id}`)) as Room
 

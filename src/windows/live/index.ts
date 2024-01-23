@@ -83,7 +83,8 @@ export default async function (room: Room) {
     backgroundColor: '#101014',
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      preload: path.join(__dirname, './preload.js')
     }
   })
 
@@ -96,28 +97,9 @@ export default async function (room: Room) {
 
   const win_id = win.id
 
-  const bliveView = new BrowserView({
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      preload: path.join(__dirname, './preload.js')
-    }
-  })
-
   // 注入css
-  bliveView.webContents.insertCSS(css)
-  bliveView.setBounds({
-    x: 0,
-    y: 0,
-    ...getSize()
-  })
-  bliveView.setAutoResize({
-    horizontal: true,
-    vertical: true
-  })
-  bliveView.webContents.loadURL(`https://live.bilibili.com/blanc/${room.room_id}?win_id=${win_id}`)
-
-  win.addBrowserView(bliveView)
+  win.webContents.insertCSS(css)
+  win.loadURL(`https://live.bilibili.com/blanc/${room.room_id}?win_id=${win_id}`)
 
   // 监听窗口关闭
   ipcMain.on(`close:${win_id}`, () => win.close())
@@ -155,6 +137,12 @@ export default async function (room: Room) {
     setKeepAspectRatio(is)
     service.changeIsKeepAspectRatio(is)
   })
+
+  // 设置音量
+  ipcMain.handle(`setVolume:${win_id}`, (_event, volume: number) => service.setVolume(volume))
+
+  // 设置音量
+  ipcMain.handle(`getVolume:${win_id}`, (_event) => service.getRoomConfig().volume)
 
   win.on('close', () => {
     const { x, y, width, height } = win.getBounds()

@@ -11,6 +11,7 @@ export interface DBConfig {
   height?: number
   x?: number
   y?: number
+  volume?: number
 }
 
 interface DBData {
