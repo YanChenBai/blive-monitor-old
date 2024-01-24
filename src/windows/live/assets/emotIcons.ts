@@ -1,26 +1,26 @@
 import axios from 'axios'
-import { awaitLivePlayer, awaitThing } from './livePlayer'
+import { awaitLivePlayer } from './livePlayer'
 import { Emoticon, Emoticons, GetEmoticons } from '../../../types/bili'
-import { mockGetEmoticons } from './mock'
 import { html } from 'proper-tags'
-import { createDom } from './tools'
 
 let showId: number
-const api = axios.create({
-  baseURL: 'https://api.live.bilibili.com',
-  withCredentials: true
-})
-
 /**
  * 获取房间表情号
  * @param roomId 真实的房间id
  */
 export async function getEmoticons(roomId: string) {
-  return await api
-    .get<GetEmoticons>(`/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id=${roomId}`)
+  return await axios
+    .get<GetEmoticons>(
+      `https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id=${roomId}`,
+      {
+        withCredentials: true
+      }
+    )
     .then((res) => {
-      console.log(res.data)
-      return res.data.data.data
+      if (res.data.code === 0) return res.data.data.data
+      else {
+        return Promise.reject(res.data.code)
+      }
     })
 }
 
@@ -170,12 +170,13 @@ function createEmojiTab(data: Emoticons) {
   emojiContentDom.appendChild(dom)
 }
 export async function createEmojiPopover(inputWrap: HTMLDivElement, roomId: string) {
+  const emoticons = await getEmoticons(roomId)
+
   const dom = document.createElement('div')
   dom.classList.add('emoji-popover')
   dom.innerHTML = html`<div class="emoji-content"></div>`
   inputWrap.appendChild(dom)
 
-  const emoticons = await getEmoticons(roomId)
   const popover = document.querySelector('.emoji-popover') as HTMLDivElement
   const content = popover.querySelector('.emoji-content') as HTMLDivElement
 

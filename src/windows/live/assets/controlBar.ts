@@ -3,6 +3,8 @@ import { Ref, createDom, ref } from './tools'
 import { ipcRenderer } from 'electron'
 import { win_id } from './getWinId'
 import { Room } from '../../../types/bili'
+import { createEmojiPopover } from './emotIcons'
+import axios from 'axios'
 
 type Btn = {
   name: string
@@ -38,6 +40,14 @@ const btns: Btn[] = [
     class: ''
   }
 ]
+
+async function getisLogin() {
+  return await axios
+    .get<{ code: number }>(`https://api.bilibili.com/x/web-interface/nav`, {
+      withCredentials: true
+    })
+    .then((res) => res.data.code === 0)
+}
 
 /**
  * 获取btn
@@ -223,6 +233,13 @@ function danmuInput(controlBarIsOpen: Ref<boolean>, userInfoIsOpen: Ref<boolean>
   }
 }
 
+function hiddenDanmuModule() {
+  const inputSwitch = document.querySelector('.input-switch') as HTMLDivElement
+  const inputWrap = document.querySelector('.input-wrap') as HTMLDivElement
+  inputSwitch.style.display = 'none'
+  inputWrap.style.display = 'none'
+}
+
 function controlBar(userInfoIsOpen: Ref<boolean>) {
   const controlBar = document.querySelector('.control-bar') as HTMLDivElement
   const controlBarIsOpen = ref(false, (value) => controlBar.classList.toggle('open', value))
@@ -251,9 +268,10 @@ export async function createControlBar(room: Room, userInfoIsOpen: Ref<boolean>)
   minBtn()
 
   const { controlBarIsOpen } = controlBar(userInfoIsOpen)
-  const { inputWrap } = danmuInput(controlBarIsOpen, userInfoIsOpen)
-
-  return {
-    inputWrap
+  if (await getisLogin()) {
+    const { inputWrap } = danmuInput(controlBarIsOpen, userInfoIsOpen)
+    createEmojiPopover(inputWrap, room.room_id)
+  } else {
+    hiddenDanmuModule()
   }
 }

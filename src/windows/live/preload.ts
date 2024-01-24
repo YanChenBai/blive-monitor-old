@@ -42,9 +42,7 @@ window.onload = async () => {
   const room = (await ipcRenderer.invoke(`getRoomData:${win_id}`)) as Room
 
   const { userInfoIsOpen } = createUaerInfo(room)
-  createControlBar(room, userInfoIsOpen).then(({ inputWrap }) => {
-    createEmojiPopover(inputWrap, room.room_id)
-  })
+  createControlBar(room, userInfoIsOpen)
 
   // 5分钟随机触发鼠标移动事件
   setInterval(() => randomMouseMove(), 1000 * 60 * 5)

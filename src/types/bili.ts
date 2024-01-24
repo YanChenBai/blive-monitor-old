@@ -141,6 +141,7 @@ export interface Emoticons {
 }
 
 export interface GetEmoticons extends Response {
+  code: number
   data: {
     data: Emoticons[]
     purchase_url: string | null
