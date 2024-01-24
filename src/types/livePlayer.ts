@@ -3,7 +3,8 @@ export interface LivePlayer {
   VERSION: string
   addLoadingPicture: () => void
   appendCtrlItem: () => void
-  capturePic: () => void
+  /** 截图 */
+  capturePic: () => string
   changeCtrlIconVisible: () => void
   changeCtrlVisible: () => void
   changeDanmakuExtraConfig: () => void

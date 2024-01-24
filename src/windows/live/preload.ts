@@ -8,6 +8,7 @@ import { win_id } from './assets/getWinId'
 import { Room } from '../../types/bili'
 import { ipcRenderer } from 'electron'
 import { randomMouseMove } from './assets/randomMouseMove'
+import { getAspectRatio } from './assets/getAspectRatio'
 
 // 清除日志显示的持久化
 clearPlayerLog()
@@ -18,7 +19,7 @@ window.onload = async () => {
     livePlayer.setFullscreenStatus(1)
 
     // 等待videoEl对象挂载, 进行声音自动播放操作
-    awaitVideoEl().then((el) => {
+    awaitVideoEl().then(async (el) => {
       el.muted = false
       const info = livePlayer.getPlayerInfo()
 
@@ -27,6 +28,11 @@ window.onload = async () => {
 
       // 滚动音量
       createChangeVolume(livePlayer)
+
+      // 获取截屏计算画面比例
+      const aspectRatio = await getAspectRatio(livePlayer.capturePic())
+      // 设置比例
+      await ipcRenderer.invoke(`setAspectRatio:${win_id}`, aspectRatio)
     })
   })
 

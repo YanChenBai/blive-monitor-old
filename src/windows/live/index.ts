@@ -96,6 +96,7 @@ export default async function (room: Room) {
   }
 
   const win_id = win.id
+  let defAspectRatio = 16 / 9
 
   // 注入css
   win.webContents.insertCSS(css)
@@ -112,7 +113,7 @@ export default async function (room: Room) {
 
   // 设置保持比例
   const setKeepAspectRatio = (state: boolean) =>
-    state ? win.setAspectRatio(16 / 9) : win.setAspectRatio(0)
+    state ? win.setAspectRatio(defAspectRatio) : win.setAspectRatio(0)
 
   // 初始化是否保持比例
   if (roomConfig.isKeepAspectRatio) setKeepAspectRatio(true)
@@ -136,6 +137,12 @@ export default async function (room: Room) {
   ipcMain.handle(`setKeepAspectRatio:${win_id}`, (_event, is: boolean) => {
     setKeepAspectRatio(is)
     service.changeIsKeepAspectRatio(is)
+  })
+
+  // 设置特殊比例
+  ipcMain.handle(`setAspectRatio:${win_id}`, (_event, value: number) => {
+    defAspectRatio = value
+    setKeepAspectRatio(service.getRoomConfig().isKeepAspectRatio)
   })
 
   // 设置音量
