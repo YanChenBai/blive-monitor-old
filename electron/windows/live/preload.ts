@@ -14,25 +14,26 @@ import { getAspectRatio } from './assets/getAspectRatio'
 clearPlayerLog()
 
 window.onload = async () => {
-  const [livePlayer, videoEl] = await Promise.all([awaitLivePlayer(), awaitVideoEl()])
+  Promise.all([awaitLivePlayer(), awaitVideoEl()]).then(async ([livePlayer, videoEl]) => {
+    // 启用网页全屏
+    livePlayer.setFullscreenStatus(1)
 
-  // 启用网页全屏
-  livePlayer.setFullscreenStatus(1)
+    // 等待videoEl对象挂载, 进行声音自动播放操作
+    videoEl.muted = false
+    const info = livePlayer.getPlayerInfo()
 
-  // 等待videoEl对象挂载, 进行声音自动播放操作
-  videoEl.muted = false
-  const info = livePlayer.getPlayerInfo()
+    // 开启声音
+    if (info.volume.disabled) info.volume.disabled = false
 
-  // 开启声音
-  if (info.volume.disabled) info.volume.disabled = false
+    // 滚动音量
+    createChangeVolume(livePlayer)
 
-  // 滚动音量
-  createChangeVolume(livePlayer)
-
-  // 获取截屏计算画面比例
-  const aspectRatio = await getAspectRatio(livePlayer.capturePic())
-  // 设置比例
-  await ipcRenderer.invoke(`setAspectRatio:${win_id}`, aspectRatio)
+    // 获取截屏计算画面比例
+    getAspectRatio(livePlayer.capturePic()).then((aspectRatio) => {
+      // 设置比例
+      ipcRenderer.invoke(`setAspectRatio:${win_id}`, aspectRatio)
+    })
+  })
 
   // 关闭弹幕侧边栏
   document.body.classList.add('hide-aside-area')
