@@ -71,3 +71,7 @@ declare global {
     }
   }
 }
+
+interface ImportMetaEnv {
+  readonly VITE_MODE: string
+}

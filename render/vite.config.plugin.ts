@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import UnoCSS from 'unocss/vite'
@@ -9,7 +9,6 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  console.log('mode:', mode)
   return {
     base: './',
     plugins: [
@@ -34,7 +33,19 @@ export default defineConfig(({ mode }) => {
       }),
       Components({
         resolvers: [NaiveUiResolver()]
-      })
+      }),
+      {
+        name: 'remove_export_default_Sp',
+        generateBundle(_, bundle) {
+          for (const fileName in bundle) {
+            const file = bundle[fileName]
+            if (file.type === 'chunk') {
+              // 在这里对代码进行处理，例如查找并替换特定的模式
+              file.code = file.code.replace('export default', '')
+            }
+          }
+        }
+      }
     ],
     resolve: {
       alias: {
@@ -42,14 +53,15 @@ export default defineConfig(({ mode }) => {
       }
     },
     build: {
+      outDir: 'dist_plugin',
       rollupOptions: {
+        input: {
+          plugin: 'src/main.plugin.ts'
+        },
         output: {
-          manualChunks: {
-            pinyin: ['pinyin-pro'],
-            ui: ['naive-ui'],
-            vue: ['vue'],
-            router: ['vue-router']
-          }
+          entryFileNames: `assets/[name].js`,
+          chunkFileNames: `assets/[name].js`,
+          assetFileNames: `assets/[name].[ext]`
         }
       }
     }

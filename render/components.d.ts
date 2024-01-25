@@ -7,10 +7,18 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ControlBar: typeof import('./src/components/ControlBar.vue')['default']
+    ControlBtn: typeof import('./src/components/ControlBtn.vue')['default']
+    IcRoundMessage: typeof import('./src/components/Icons/IcRoundMessage.vue')['default']
+    MaterialSymbolsCancel: typeof import('./src/components/Icons/MaterialSymbolsCancel.vue')['default']
     MaterialSymbolsDeleteRounded: typeof import('./src/components/Icons/MaterialSymbolsDeleteRounded.vue')['default']
     MaterialSymbolsSyncRounded: typeof import('./src/components/Icons/MaterialSymbolsSyncRounded.vue')['default']
     MingcuteCloseFill: typeof import('./src/components/Icons/MingcuteCloseFill.vue')['default']
+    MingcuteLockFill: typeof import('./src/components/Icons/MingcuteLockFill.vue')['default']
     MingcuteMinimizeFill: typeof import('./src/components/Icons/MingcuteMinimizeFill.vue')['default']
+    MingcutePin2Fill: typeof import('./src/components/Icons/MingcutePin2Fill.vue')['default']
+    MingcutePinFill: typeof import('./src/components/Icons/MingcutePinFill.vue')['default']
+    MingcuteUnlockFill: typeof import('./src/components/Icons/MingcuteUnlockFill.vue')['default']
     NAvatar: typeof import('naive-ui')['NAvatar']
     NBadge: typeof import('naive-ui')['NBadge']
     NButton: typeof import('naive-ui')['NButton']
